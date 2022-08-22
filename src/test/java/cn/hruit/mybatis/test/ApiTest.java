@@ -1,9 +1,9 @@
 package cn.hruit.mybatis.test;
 
-import cn.hruit.mybatis.binding.MapperProxyFactory;
-import cn.hruit.mybatis.test.dao.IUserMapper;
-
-import java.util.HashMap;
+import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.session.SqlSession;
+import cn.hruit.mybatis.session.defaults.DefaultSqlSessionFactory;
+import cn.hruit.mybatis.test.dao.IDeptMapper;
 
 /**
  * @author HONGRRY
@@ -12,14 +12,15 @@ import java.util.HashMap;
  **/
 public class ApiTest {
     public static void main(String[] args) {
-        HashMap<String, String> sqlSession = new HashMap<>();
-        sqlSession.put("cn.hruit.mybatis.test.dao.IUserMapper.queryUserName", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户姓名");
-        sqlSession.put("cn.hruit.mybatis.test.dao.IUserMapper.queryUserAge", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户年龄");
+        MapperRegistry mapperRegistry = new MapperRegistry();
+        mapperRegistry.addMappers("cn.hruit.mybatis.test.dao");
 
+        DefaultSqlSessionFactory sessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
+        SqlSession sqlSession = sessionFactory.openSession();
 
-        MapperProxyFactory<IUserMapper> factory = new MapperProxyFactory<>(sqlSession, IUserMapper.class);
-        IUserMapper IUserMapper = factory.newInstance();
-        System.out.println(IUserMapper.queryUserAge());
-        System.out.println(IUserMapper.queryUserName());
+        IDeptMapper mapper = sqlSession.getMapper(IDeptMapper.class);
+        System.out.println(mapper.queryDeptName());
+        Object hello = sqlSession.selectOne("xxxx", "Hello");
+        System.out.println(hello);
     }
 }

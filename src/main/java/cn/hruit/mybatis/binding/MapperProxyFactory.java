@@ -1,7 +1,8 @@
 package cn.hruit.mybatis.binding;
 
+import cn.hruit.mybatis.session.SqlSession;
+
 import java.lang.reflect.Proxy;
-import java.util.Map;
 
 /**
  * @author HONGRRY
@@ -10,15 +11,13 @@ import java.util.Map;
  * @date 2022/08/22 13:40
  **/
 public class MapperProxyFactory<T> {
-    private final Map<String, String> sqlSession;
     private final Class<T> mapperInterface;
 
-    public MapperProxyFactory(Map<String, String> sqlSession, Class<T> mapperInterface) {
-        this.sqlSession = sqlSession;
+    public MapperProxyFactory(Class<T> mapperInterface) {
         this.mapperInterface = mapperInterface;
     }
 
-    public T newInstance() {
+    public T newInstance(SqlSession sqlSession) {
         MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class[]{mapperInterface}, mapperProxy);
