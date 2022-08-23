@@ -4,6 +4,7 @@ import cn.hruit.mybatis.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * @author HONGRRY
@@ -13,10 +14,12 @@ import java.lang.reflect.Method;
 public class MapperProxy<T> implements InvocationHandler {
     private final SqlSession sqlSession;
     private final Class<T> mapperInterface;
+    private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface) {
+    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache) {
         this.sqlSession = sqlSession;
         this.mapperInterface = mapperInterface;
+        this.methodCache = methodCache;
     }
 
     @Override
@@ -24,7 +27,20 @@ public class MapperProxy<T> implements InvocationHandler {
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(proxy, args);
         }
-        //TODO 怎么获取绑定的SQL 2022年8月22日15:18:15
-        return method.getName() + "被代理了";
+        final MapperMethod mapperMethod = cachedMapperMethod(method);
+        return mapperMethod.execute(sqlSession, args);
+    }
+
+    /**
+     * 去缓存中找MapperMethod
+     * 为什么要缓存MapperMethod,而不是缓存代理实例
+     */
+    private MapperMethod cachedMapperMethod(Method method) {
+        MapperMethod mapperMethod = methodCache.get(method);
+        if (null == mapperMethod) {
+            mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+            methodCache.put(method, mapperMethod);
+        }
+        return mapperMethod;
     }
 }

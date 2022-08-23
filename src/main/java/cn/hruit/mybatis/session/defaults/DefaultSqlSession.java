@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.session.defaults;
 
-import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.session.SqlSession;
 
 /**
@@ -9,10 +10,10 @@ import cn.hruit.mybatis.session.SqlSession;
  * @date 2022/08/22 14:39
  **/
 public class DefaultSqlSession implements SqlSession {
-    private final MapperRegistry registry;
+    private final Configuration configuration;
 
-    public DefaultSqlSession(MapperRegistry registry) {
-        this.registry = registry;
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -22,11 +23,17 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        return (T) ("selectOne:" + parameter);
+        MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+        return (T) ("你被代理了！" + "\n方法：" + statement + "\n入参：" + parameter + "\n待执行SQL：" + mappedStatement.getSql());
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        return registry.getMapper(type, this);
+        return configuration.getMapper(type, this);
     }
 }
