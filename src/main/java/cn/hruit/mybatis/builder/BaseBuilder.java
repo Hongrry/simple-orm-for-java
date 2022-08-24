@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.builder;
 
 import cn.hruit.mybatis.session.Configuration;
+import cn.hruit.mybatis.type.TypeAliasRegistry;
 
 /**
  * @author HONGRRY
@@ -9,9 +10,14 @@ import cn.hruit.mybatis.session.Configuration;
  **/
 public class BaseBuilder {
     protected Configuration configuration;
+    /**
+     * 别名注册器在Builder里面有什么用
+     */
+    protected final TypeAliasRegistry typeAliasRegistry;
 
     public BaseBuilder(Configuration configuration) {
         this.configuration = configuration;
+        this.typeAliasRegistry = configuration.getTypeAliasRegistry();
     }
 
     public Configuration getConfiguration() {

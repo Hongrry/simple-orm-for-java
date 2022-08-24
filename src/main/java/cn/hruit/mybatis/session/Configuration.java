@@ -1,7 +1,11 @@
 package cn.hruit.mybatis.session;
 
 import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory;
+import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import cn.hruit.mybatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +16,19 @@ import java.util.Map;
  * @date 2022/08/23 11:12
  **/
 public class Configuration {
-    private MapperRegistry registry = new MapperRegistry();
+    private Environment environment;
+
+    private final MapperRegistry registry = new MapperRegistry();
     /**
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    public Configuration() {
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
 
     public void addMapper(Class<?> type) {
         registry.addMapper(type);
@@ -32,5 +44,17 @@ public class Configuration {
 
     public MappedStatement getMappedStatement(String id) {
         return mappedStatements.get(id);
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
     }
 }

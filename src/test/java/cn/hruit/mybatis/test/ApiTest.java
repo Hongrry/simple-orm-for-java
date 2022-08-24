@@ -5,6 +5,8 @@ import cn.hruit.mybatis.session.SqlSession;
 import cn.hruit.mybatis.session.SqlSessionFactory;
 import cn.hruit.mybatis.session.SqlSessionFactoryBuilder;
 import cn.hruit.mybatis.test.dao.IUserMapper;
+import cn.hruit.mybatis.test.po.User;
+import com.alibaba.fastjson.JSON;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -21,7 +23,7 @@ public class ApiTest {
 
         SqlSession sqlSession = sqlSessionFactory.openSession();
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
-        System.out.println(userMapper.queryUserInfoById("134"));
-
+        User user = userMapper.queryUserInfoById(1L);
+        System.out.println(JSON.toJSONString(user));
     }
 }

@@ -3,7 +3,17 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="DRUID">
+                <property name="url" value="jdbc:mysql://82.157.64.86:3306/mybatis?useUnicode=true"/>
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="username" value="root"/>
+                <property name="password" value="3J7aU#PZ#qL&amp;HR"/>
+            </dataSource>
+        </environment>
+    </environments>
     <mappers>
         <mapper resource="mapper/User_Mapper.xml"/>
     </mappers>

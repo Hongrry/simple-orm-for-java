@@ -4,7 +4,7 @@
 <mapper namespace="cn.hruit.mybatis.test.dao.IUserMapper">
 
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="cn.hruit.mybatis.test.po.User">
-        SELECT id, userId, userHead, createTime
+        SELECT id, userId, userName, userHead
         FROM user
         where id = #{id}
     </select>
