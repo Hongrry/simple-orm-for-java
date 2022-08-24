@@ -41,7 +41,7 @@ public class DefaultSqlSession implements SqlSession {
             Object[] objects = (Object[]) parameter;
             ps.setLong(1, (Long) objects[0]);
             ResultSet resultSet = ps.executeQuery();
-            List<T> list = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
+            List<T> list = resultSet2Obj(resultSet, configuration.getTypeAliasRegistry().resolveAlias(boundSql.getResultType()));
             return list.get(0);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -51,6 +51,7 @@ public class XmlConfigBuilder extends BaseBuilder {
      */
     public Configuration parse() {
         try {
+            typeAliasesElement(root.element("typeAliases"));
             environmentsElement(root.element("environments"));
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
@@ -58,6 +59,31 @@ public class XmlConfigBuilder extends BaseBuilder {
         }
         return configuration;
     }
+
+    private void typeAliasesElement(Element typeAliases) {
+        TypeAliasRegistry registry = configuration.getTypeAliasRegistry();
+        for (Element element : typeAliases.elements()) {
+            String name = element.getName();
+            if ("package".equals(name)) {
+                String packageName = element.attributeValue("name");
+                registry.registerAliases(packageName);
+            } else {
+                String type = element.attributeValue("type");
+                String alias = element.attributeValue("alias");
+                try {
+                    Class<?> clazz = Resources.classForName(type);
+                    if (alias == null) {
+                        typeAliasRegistry.registerAlias(clazz);
+                    } else {
+                        typeAliasRegistry.registerAlias(alias, clazz);
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Error registering typeAlias for '" + alias + "'. Cause: " + e, e);
+                }
+            }
+        }
+    }
+
 
     private void environmentsElement(Element environments) throws Exception {
         // 使用默认环境

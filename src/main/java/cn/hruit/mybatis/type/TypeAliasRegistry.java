@@ -2,6 +2,7 @@ package cn.hruit.mybatis.type;
 
 import cn.hruit.mybatis.io.Resources;
 import cn.hutool.core.annotation.Alias;
+import cn.hutool.core.util.ClassUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -125,6 +126,15 @@ public class TypeAliasRegistry {
             throw new RuntimeException("The alias '" + alias + "' is already mapped to the value '" + typeAliases.get(key).getName() + "'.");
         }
         typeAliases.put(key, value);
+    }
+
+    public void registerAliases(String packageName) {
+        Set<Class<?>> classes = ClassUtil.scanPackage(packageName);
+        for (Class<?> type : classes) {
+            if (!type.isAnonymousClass() && !type.isInterface() && !type.isMemberClass()) {
+                registerAlias(type);
+            }
+        }
     }
 
     public void registerAlias(String alias, String value) {

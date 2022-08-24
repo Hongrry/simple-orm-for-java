@@ -3,6 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+    <typeAliases>
+        <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
+        <typeAlias type="cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory" alias="JDBC"/>
+        <package name="cn.hruit.mybatis.test.po"/>
+    </typeAliases>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -17,5 +22,4 @@
     <mappers>
         <mapper resource="mapper/User_Mapper.xml"/>
     </mappers>
-
 </configuration>
