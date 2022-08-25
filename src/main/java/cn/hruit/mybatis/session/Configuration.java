@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.session;
 
 import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.mapping.MappedStatement;
@@ -26,6 +27,7 @@ public class Configuration {
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 
     public Configuration() {
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     }

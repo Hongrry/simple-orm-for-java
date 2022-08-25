@@ -32,10 +32,9 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        try {
+        Environment environment = configuration.getEnvironment();
+        try (Connection connection = environment.getDataSource().getConnection()) {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
-            Environment environment = configuration.getEnvironment();
-            Connection connection = environment.getDataSource().getConnection();
             BoundSql boundSql = mappedStatement.getBoundSql();
             PreparedStatement ps = connection.prepareStatement(boundSql.getSql());
             Object[] objects = (Object[]) parameter;

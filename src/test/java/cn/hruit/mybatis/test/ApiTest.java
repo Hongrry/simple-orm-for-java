@@ -23,7 +23,13 @@ public class ApiTest {
 
         SqlSession sqlSession = sqlSessionFactory.openSession();
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
-        User user = userMapper.queryUserInfoById(1L);
-        System.out.println(JSON.toJSONString(user));
+        long begin = System.currentTimeMillis();
+        for (int i = 0; i < 50; i++) {
+            User user = userMapper.queryUserInfoById(1L);
+            System.out.println(JSON.toJSONString(user));
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Total: " + (end - begin) / 1000);
+
     }
 }
