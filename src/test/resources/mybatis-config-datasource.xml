@@ -5,13 +5,13 @@
 <configuration>
     <typeAliases>
         <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
-        <typeAlias type="cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory" alias="JDBC"/>
+
         <package name="cn.hruit.mybatis.test.po"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
-            <dataSource type="DRUID">
+            <dataSource type="UNPOOLED">
                 <property name="url" value="jdbc:mysql://82.157.64.86:3306/mybatis?useUnicode=true"/>
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="username" value="root"/>

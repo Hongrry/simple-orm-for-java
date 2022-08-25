@@ -2,7 +2,6 @@ package cn.hruit.mybatis.builder.xml;
 
 import cn.hruit.mybatis.builder.BaseBuilder;
 import cn.hruit.mybatis.datasource.DataSourceFactory;
-import cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.Environment;
@@ -109,7 +108,7 @@ public class XmlConfigBuilder extends BaseBuilder {
     private DataSourceFactory dataSourceElement(Element context) throws InstantiationException, IllegalAccessException {
         TypeAliasRegistry aliasRegistry = configuration.getTypeAliasRegistry();
         String type = context.attributeValue("type");
-        DruidDataSourceFactory dsFactory = (DruidDataSourceFactory) aliasRegistry.resolveAlias(type).newInstance();
+        DataSourceFactory dsFactory = (DataSourceFactory) aliasRegistry.resolveAlias(type).newInstance();
         // 解析属性
         Properties props = new Properties();
         List<Element> propertyList = context.elements("property");

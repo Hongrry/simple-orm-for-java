@@ -92,8 +92,6 @@ public class TypeAliasRegistry {
             if (string == null) {
                 return null;
             }
-            // issue #748
-            // 变成小写了，那么ResultSet怎么获取呢。没用了啊
             String key = string.toLowerCase(Locale.ENGLISH);
             Class<T> value;
             if (typeAliases.containsKey(key)) {
@@ -120,7 +118,6 @@ public class TypeAliasRegistry {
         if (alias == null) {
             throw new RuntimeException("The parameter alias cannot be null");
         }
-        // issue #748
         String key = alias.toLowerCase(Locale.ENGLISH);
         if (typeAliases.containsKey(key) && typeAliases.get(key) != null && !typeAliases.get(key).equals(value)) {
             throw new RuntimeException("The alias '" + alias + "' is already mapped to the value '" + typeAliases.get(key).getName() + "'.");
