@@ -29,7 +29,7 @@ public class ApiTest {
             System.out.println(JSON.toJSONString(user));
         }
         long end = System.currentTimeMillis();
-        System.out.println("Total: " + (end - begin) / 1000);
+        System.out.println("Total: " + (end - begin));
 
     }
 }

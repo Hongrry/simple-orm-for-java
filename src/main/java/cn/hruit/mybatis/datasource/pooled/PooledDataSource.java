@@ -26,6 +26,7 @@ public class PooledDataSource implements DataSource {
 
     /**
      * 非池化数据源
+     * 用于创建数据连接
      */
     private final UnpooledDataSource dataSource;
 

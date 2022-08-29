@@ -5,7 +5,6 @@
 <configuration>
     <typeAliases>
         <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
-
         <package name="cn.hruit.mybatis.test.po"/>
     </typeAliases>
     <environments default="development">

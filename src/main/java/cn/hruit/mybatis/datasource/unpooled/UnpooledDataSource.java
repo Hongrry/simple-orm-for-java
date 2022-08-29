@@ -284,6 +284,7 @@ public class UnpooledDataSource implements DataSource {
     /**
      * 代理驱动
      * 为什么需要代理驱动？
+     * 静态代理 封装日志
      */
     private static class ProxyDriver implements Driver {
         private Driver driver;

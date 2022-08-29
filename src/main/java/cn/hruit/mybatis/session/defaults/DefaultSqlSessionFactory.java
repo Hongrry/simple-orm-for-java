@@ -1,8 +1,15 @@
 package cn.hruit.mybatis.session.defaults;
 
+import cn.hruit.mybatis.executor.Executor;
+import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.session.SqlSession;
 import cn.hruit.mybatis.session.SqlSessionFactory;
+import cn.hruit.mybatis.session.TransactionIsolationLevel;
+import cn.hruit.mybatis.transaction.Transaction;
+import cn.hruit.mybatis.transaction.TransactionFactory;
+
+import java.sql.SQLException;
 
 /**
  * @author HONGRRY
@@ -18,6 +25,20 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(configuration);
+        Transaction tx = null;
+        Environment environment = configuration.getEnvironment();
+        try {
+            TransactionFactory transactionFactory = environment.getTransactionFactory();
+            tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, false);
+            Executor executor = configuration.newExecutor(tx);
+            return new DefaultSqlSession(configuration, executor);
+        } catch (Exception e) {
+            try {
+                assert tx != null;
+                tx.close();
+            } catch (SQLException ignore) {
+            }
+            throw new RuntimeException("Error opening session.  Cause: " + e);
+        }
     }
 }
