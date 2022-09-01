@@ -8,10 +8,6 @@ import cn.hruit.mybatis.session.Configuration;
  * @author HONGRRY
  */
 public class MappedStatement {
-
-    /**
-     * configuration  在这里的作用是什么?
-     */
     private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
