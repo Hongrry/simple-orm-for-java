@@ -31,7 +31,6 @@ public interface ObjectWrapper {
 
     /**
      * 查找属性
-     * TODO 用来干嘛的？
      *
      * @param name                属性名
      * @param useCamelCaseMapping 是否使用驼峰命名
@@ -87,7 +86,6 @@ public interface ObjectWrapper {
 
     /**
      * 实例化属性
-     * TODO 作用是什么
      *
      * @param name          属性名
      * @param prop          属性prop

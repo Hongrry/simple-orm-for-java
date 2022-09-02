@@ -7,7 +7,6 @@ import java.sql.Connection;
 
 /**
  * 事务工厂
- * 事务工厂怎么使用
  * @author HONGRRY
  */
 public interface TransactionFactory {

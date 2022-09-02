@@ -21,8 +21,6 @@ public class CollectionWrapper extends BaseWrapper {
     }
 
     /**
-     * 为什么Get Set 是不允许的
-     *
      * @param prop 属性
      * @return
      */

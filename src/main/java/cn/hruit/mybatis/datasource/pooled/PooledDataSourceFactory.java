@@ -1,6 +1,5 @@
 package cn.hruit.mybatis.datasource.pooled;
 
-import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSource;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -11,13 +10,13 @@ import javax.sql.DataSource;
  * @date 2022/08/25 15:22
  **/
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+    public PooledDataSourceFactory() {
+        dataSource = new PooledDataSource();
+
+    }
+
     @Override
     public DataSource getDataSource() {
-        PooledDataSource dataSource = new PooledDataSource();
-        dataSource.setDriver(props.getProperty("driver"));
-        dataSource.setUrl(props.getProperty("url"));
-        dataSource.setUsername(props.getProperty("username"));
-        dataSource.setPassword(props.getProperty("password"));
         return dataSource;
     }
 }
