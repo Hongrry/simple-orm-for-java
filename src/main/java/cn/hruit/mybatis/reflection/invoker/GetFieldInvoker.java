@@ -9,10 +9,10 @@ import java.lang.reflect.Field;
  * @description 获取属性调用
  * @date 2022/09/01 09:20
  **/
-public class GetFiledInvoker implements Invoker {
+public class GetFieldInvoker implements Invoker {
     private final Field field;
 
-    public GetFiledInvoker(Field field) {
+    public GetFieldInvoker(Field field) {
         this.field = field;
     }
 

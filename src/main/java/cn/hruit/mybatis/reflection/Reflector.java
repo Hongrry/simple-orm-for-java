@@ -1,6 +1,6 @@
 package cn.hruit.mybatis.reflection;
 
-import cn.hruit.mybatis.reflection.invoker.GetFiledInvoker;
+import cn.hruit.mybatis.reflection.invoker.GetFieldInvoker;
 import cn.hruit.mybatis.reflection.invoker.Invoker;
 import cn.hruit.mybatis.reflection.invoker.MethodInvoker;
 import cn.hruit.mybatis.reflection.invoker.SetFieldInvoker;
@@ -97,7 +97,7 @@ public class Reflector {
     private void addGetField(Field field) {
         String fieldName = field.getName();
         if (isValidPropertyName(fieldName)) {
-            getMethods.put(fieldName, new GetFiledInvoker(field));
+            getMethods.put(fieldName, new GetFieldInvoker(field));
             getTypes.put(fieldName, field.getType());
         }
 
