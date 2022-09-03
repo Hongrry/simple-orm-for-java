@@ -12,12 +12,23 @@ import cn.hruit.mybatis.executor.statement.StatementHandler;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.reflection.DefaultReflectorFactory;
+import cn.hruit.mybatis.reflection.MetaObject;
+import cn.hruit.mybatis.reflection.ReflectorFactory;
+import cn.hruit.mybatis.reflection.factory.DefaultObjectFactory;
+import cn.hruit.mybatis.reflection.factory.ObjectFactory;
+import cn.hruit.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import cn.hruit.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import cn.hruit.mybatis.scripting.LanguageDriverRegistry;
+import cn.hruit.mybatis.scripting.xmltags.XMLLanguageDriver;
 import cn.hruit.mybatis.transaction.Transaction;
 import cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author HONGRRY
@@ -32,12 +43,43 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    /**
+     * 类型别名中心
+     */
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+    /**
+     *
+     */
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+    /**
+     * 默认反射器工厂
+     */
+    protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+    /**
+     * 默认对象工厂
+     */
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    /**
+     * 默认对象包装工厂
+     */
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    /**
+     * 资源加载集合，记录已经加载过的资源
+     */
+    protected final Set<String> loadedResources = new HashSet<>();
+    /**
+     * databaseId 的作用是什么
+     */
+    protected String databaseId;
 
     public Configuration() {
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+
+        // 设置默认XML语言驱动
+        languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
     public void addMapper(Class<?> type) {
@@ -69,7 +111,7 @@ public class Configuration {
     }
 
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
-        return new DefaultResultSetHandler(mappedStatement);
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
     }
 
     public Executor newExecutor(Transaction tx) {
@@ -78,5 +120,25 @@ public class Configuration {
 
     public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
         return new PreparedStatementHandler(executor, ms, parameter, resultHandler, boundSql);
+    }
+
+    public boolean isResourceLoaded(String resource) {
+        return loadedResources.contains(resource);
+    }
+
+    public void addLoadedResource(String resource) {
+        loadedResources.add(resource);
+    }
+
+    public LanguageDriverRegistry getLanguageRegistry() {
+        return languageRegistry;
+    }
+
+    public MetaObject newMetaObject(Object parameterObject) {
+        return MetaObject.forObject(parameterObject, objectFactory, objectWrapperFactory, reflectorFactory);
+    }
+
+    public Object getDatabaseId() {
+        return databaseId;
     }
 }

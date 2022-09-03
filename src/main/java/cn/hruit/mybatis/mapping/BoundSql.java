@@ -1,34 +1,55 @@
 package cn.hruit.mybatis.mapping;
 
+import cn.hruit.mybatis.reflection.MetaObject;
+import cn.hruit.mybatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * 绑定的SQL,是从SqlSource而来，将动态内容都处理完成得到的SQL语句字符串，其中包括?,还有绑定的参数
+ *
+ * @author HONGRRY
+ */
 public class BoundSql {
 
     private String sql;
-    private Map<Integer, String> parameterMappings;
-    private String parameterType;
-    private String resultType;
+    private List<ParameterMapping> parameterMappings;
+    private Object parameterObject;
+    private Map<String, Object> additionalParameters;
+    private MetaObject metaParameters;
 
-    public BoundSql(String sql, Map<Integer, String> parameterMappings, String parameterType, String resultType) {
+    public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {
         this.sql = sql;
         this.parameterMappings = parameterMappings;
-        this.parameterType = parameterType;
-        this.resultType = resultType;
+        this.parameterObject = parameterObject;
+        this.additionalParameters = new HashMap<>();
+        this.metaParameters = configuration.newMetaObject(additionalParameters);
     }
 
     public String getSql() {
         return sql;
     }
 
-    public Map<Integer, String> getParameterMappings() {
+    public List<ParameterMapping> getParameterMappings() {
         return parameterMappings;
     }
 
-    public String getParameterType() {
-        return parameterType;
+    public Object getParameterObject() {
+        return parameterObject;
     }
 
-    public String getResultType() {
-        return resultType;
+    public boolean hasAdditionalParameter(String name) {
+        return metaParameters.hasGetter(name);
     }
+
+    public void setAdditionalParameter(String name, Object value) {
+        metaParameters.setValue(name, value);
+    }
+
+    public Object getAdditionalParameter(String name) {
+        return metaParameters.getValue(name);
+    }
+
 }

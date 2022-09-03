@@ -27,4 +27,8 @@ public class BaseBuilder {
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
+
+    protected Class<?> resolveAlias(String alias) {
+        return typeAliasRegistry.resolveAlias(alias);
+    }
 }

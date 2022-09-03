@@ -9,15 +9,21 @@ import cn.hutool.db.meta.JdbcType;
  *
  * @author HONGRRY
  */
-@Deprecated
 public class ParameterMapping {
+
     private Configuration configuration;
 
-    // property
+    /**
+     * property 属性名
+     */
     private String property;
-    // javaType = int
+    /**
+     * javaType = int
+     */
     private Class<?> javaType = Object.class;
-    // jdbcType=NUMERIC
+    /**
+     * jdbcType=NUMERIC
+     */
     private JdbcType jdbcType;
 
     private ParameterMapping() {
@@ -27,9 +33,10 @@ public class ParameterMapping {
 
         private ParameterMapping parameterMapping = new ParameterMapping();
 
-        public Builder(Configuration configuration, String property) {
+        public Builder(Configuration configuration, String property, Class<?> javaType) {
             parameterMapping.configuration = configuration;
             parameterMapping.property = property;
+            parameterMapping.javaType = javaType;
         }
 
         public Builder javaType(Class<?> javaType) {
@@ -42,6 +49,9 @@ public class ParameterMapping {
             return this;
         }
 
+        public ParameterMapping build() {
+            return parameterMapping;
+        }
     }
 
     public Configuration getConfiguration() {
@@ -59,5 +69,4 @@ public class ParameterMapping {
     public JdbcType getJdbcType() {
         return jdbcType;
     }
-
 }

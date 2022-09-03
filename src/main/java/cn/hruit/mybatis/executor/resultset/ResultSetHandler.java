@@ -18,6 +18,6 @@ public interface ResultSetHandler {
      * @return 处理结果
      * @throws SQLException SQLException
      */
-    <E> List<E> handleResultSets(Statement stmt) throws SQLException;
+    <E> List<E> handleResultSets(Statement stmt) throws SQLException ;
 
 }
