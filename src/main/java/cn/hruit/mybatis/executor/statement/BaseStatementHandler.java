@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.executor.statement;
 
 import cn.hruit.mybatis.executor.Executor;
+import cn.hruit.mybatis.executor.paramter.ParameterHandler;
 import cn.hruit.mybatis.executor.resultset.ResultSetHandler;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
@@ -24,6 +25,8 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
     protected final Object parameterObject;
     protected final ResultSetHandler resultSetHandler;
+    protected final ParameterHandler parameterHandler;
+
     protected BoundSql boundSql;
 
     public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler, BoundSql boundSql) {
@@ -31,8 +34,8 @@ public abstract class BaseStatementHandler implements StatementHandler {
         this.executor = executor;
         this.mappedStatement = mappedStatement;
         this.boundSql = boundSql;
-
         this.parameterObject = parameterObject;
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
     }
 
@@ -55,6 +58,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
      *
      * @param connection 连接
      * @return 语句
+     * @throws SQLException 异常信息
      */
     protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
 }

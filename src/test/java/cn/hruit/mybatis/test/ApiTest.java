@@ -24,7 +24,10 @@ public class ApiTest {
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
-        User user = userMapper.queryUserInfoById(1L);
+
+        User req = new User();
+        req.setId(1L);
+        User user = userMapper.queryUserInfoById(req);
         System.out.println(JSON.toJSONString(user));
     }
 

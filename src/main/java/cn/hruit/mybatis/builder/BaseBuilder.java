@@ -2,6 +2,7 @@ package cn.hruit.mybatis.builder;
 
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
+import cn.hruit.mybatis.type.TypeHandlerRegistry;
 
 /**
  * @author HONGRRY
@@ -14,10 +15,12 @@ public class BaseBuilder {
      * 别名注册器在Builder里面有什么用
      */
     protected final TypeAliasRegistry typeAliasRegistry;
+    protected final TypeHandlerRegistry typeHandlerRegistry;
 
     public BaseBuilder(Configuration configuration) {
         this.configuration = configuration;
         this.typeAliasRegistry = configuration.getTypeAliasRegistry();
+        this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     }
 
     public Configuration getConfiguration() {

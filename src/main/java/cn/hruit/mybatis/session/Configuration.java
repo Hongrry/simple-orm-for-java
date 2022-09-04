@@ -5,6 +5,7 @@ import cn.hruit.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import cn.hruit.mybatis.executor.Executor;
 import cn.hruit.mybatis.executor.SimpleExecutor;
+import cn.hruit.mybatis.executor.paramter.ParameterHandler;
 import cn.hruit.mybatis.executor.resultset.DefaultResultSetHandler;
 import cn.hruit.mybatis.executor.resultset.ResultSetHandler;
 import cn.hruit.mybatis.executor.statement.PreparedStatementHandler;
@@ -19,11 +20,13 @@ import cn.hruit.mybatis.reflection.factory.DefaultObjectFactory;
 import cn.hruit.mybatis.reflection.factory.ObjectFactory;
 import cn.hruit.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import cn.hruit.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import cn.hruit.mybatis.scripting.LanguageDriver;
 import cn.hruit.mybatis.scripting.LanguageDriverRegistry;
 import cn.hruit.mybatis.scripting.xmltags.XMLLanguageDriver;
 import cn.hruit.mybatis.transaction.Transaction;
 import cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
+import cn.hruit.mybatis.type.TypeHandlerRegistry;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,9 +51,14 @@ public class Configuration {
      */
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
     /**
-     *
+     * 语言驱动注册器
      */
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+    /**
+     * 类型处理注册器
+     */
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+
     /**
      * 默认反射器工厂
      */
@@ -140,5 +148,22 @@ public class Configuration {
 
     public Object getDatabaseId() {
         return databaseId;
+    }
+
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+        ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+        return parameterHandler;
+    }
+
+    public TypeHandlerRegistry getTypeHandlerRegistry() {
+        return typeHandlerRegistry;
+    }
+
+    public LanguageDriver getDefaultScriptingLanguageInstance() {
+        return languageRegistry.getDefaultDriver();
+    }
+
+    public ReflectorFactory getReflectorFactory() {
+        return reflectorFactory;
     }
 }

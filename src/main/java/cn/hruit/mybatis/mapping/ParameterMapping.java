@@ -2,7 +2,9 @@ package cn.hruit.mybatis.mapping;
 
 
 import cn.hruit.mybatis.session.Configuration;
-import cn.hutool.db.meta.JdbcType;
+import cn.hruit.mybatis.type.JdbcType;
+import cn.hruit.mybatis.type.TypeHandler;
+import cn.hruit.mybatis.type.TypeHandlerRegistry;
 
 /**
  * 参数映射 #{property,javaType=int,jdbcType=NUMERIC}
@@ -25,8 +27,16 @@ public class ParameterMapping {
      * jdbcType=NUMERIC
      */
     private JdbcType jdbcType;
+    /**
+     * 类型处理器
+     */
+    private TypeHandler<?> typeHandler;
 
     private ParameterMapping() {
+    }
+
+    public TypeHandler<?> getTypeHandler() {
+        return typeHandler;
     }
 
     public static class Builder {
@@ -50,6 +60,11 @@ public class ParameterMapping {
         }
 
         public ParameterMapping build() {
+            if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
+                Configuration configuration = parameterMapping.configuration;
+                TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+                parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType, parameterMapping.jdbcType);
+            }
             return parameterMapping;
         }
     }

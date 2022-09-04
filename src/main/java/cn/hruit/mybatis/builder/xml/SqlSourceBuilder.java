@@ -8,6 +8,7 @@ import cn.hruit.mybatis.mapping.ParameterMapping;
 import cn.hruit.mybatis.mapping.SqlSource;
 import cn.hruit.mybatis.parsing.GenericTokenParser;
 import cn.hruit.mybatis.parsing.TokenHandler;
+import cn.hruit.mybatis.reflection.MetaClass;
 import cn.hruit.mybatis.reflection.MetaObject;
 import cn.hruit.mybatis.session.Configuration;
 
@@ -66,7 +67,19 @@ public class SqlSourceBuilder extends BaseBuilder {
             // 先解析参数映射,就是转化成一个 HashMap | #{favouriteSection,jdbcType=VARCHAR}
             Map<String, String> propertiesMap = new ParameterExpression(content);
             String property = propertiesMap.get("property");
-            Class<?> propertyType = parameterType;
+            Class<?> propertyType;
+            if (typeHandlerRegistry.hasTypeHandler(parameterType)) {
+                propertyType = parameterType;
+            } else if (property != null) {
+                MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
+                if (metaClass.hasGetter(property)) {
+                    propertyType = metaClass.getGetterType(property);
+                } else {
+                    propertyType = Object.class;
+                }
+            } else {
+                propertyType = Object.class;
+            }
             ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
             return builder.build();
         }
