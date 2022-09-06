@@ -4,6 +4,7 @@ import cn.hruit.mybatis.builder.BaseBuilder;
 import cn.hruit.mybatis.datasource.DataSourceFactory;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.mapping.Environment;
+import cn.hruit.mybatis.reflection.MetaClass;
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.transaction.TransactionFactory;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
@@ -48,6 +49,8 @@ public class XmlConfigBuilder extends BaseBuilder {
      */
     public Configuration parse() {
         try {
+            Properties settings = settingsAsProperties(root.element("settings"));
+            settingsElement(settings);
             typeAliasesElement(root.element("typeAliases"));
             environmentsElement(root.element("environments"));
             mapperElement(root.element("mappers"));
@@ -55,6 +58,10 @@ public class XmlConfigBuilder extends BaseBuilder {
             throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
         }
         return configuration;
+    }
+
+    private void settingsElement(Properties props) {
+        configuration.setMapUnderscoreToCamelCase(booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
     }
 
     private void typeAliasesElement(Element typeAliases) {
@@ -143,5 +150,23 @@ public class XmlConfigBuilder extends BaseBuilder {
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource);
             mapperParser.parse();
         }
+    }
+
+    private Properties settingsAsProperties(Element settings) {
+        if (settings == null) {
+            return new Properties();
+        }
+        Properties props = new Properties();
+        // Check that all settings are known to the configuration class
+        MetaClass metaConfig = MetaClass.forClass(Configuration.class, configuration.getReflectorFactory());
+        for (Element setting : settings.elements()) {
+            String key = setting.attributeValue("name");
+            String value = setting.attributeValue("value");
+            if (!metaConfig.hasSetter(String.valueOf(key))) {
+                throw new RuntimeException("The setting " + key + " is not known.  Make sure you spelled it correctly (case sensitive).");
+            }
+            props.put(key, value);
+        }
+        return props;
     }
 }

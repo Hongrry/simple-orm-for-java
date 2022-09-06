@@ -39,6 +39,10 @@ import java.util.Set;
  * @date 2022/08/23 11:12
  **/
 public class Configuration {
+    /**
+     * 是否启用驼峰映射
+     */
+    protected boolean mapUnderscoreToCamelCase;
     private Environment environment;
 
     private final MapperRegistry registry = new MapperRegistry();
@@ -166,4 +170,13 @@ public class Configuration {
     public ReflectorFactory getReflectorFactory() {
         return reflectorFactory;
     }
+
+    public void setMapUnderscoreToCamelCase(boolean mapUnderscoreToCamelCase) {
+        this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
+    }
+
+    public boolean isMapUnderscoreToCamelCase() {
+        return mapUnderscoreToCamelCase;
+    }
+
 }

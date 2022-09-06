@@ -3,6 +3,8 @@ package cn.hruit.mybatis.test.dao;
 import cn.hruit.mybatis.test.po.User;
 
 public interface IUserMapper {
-    User queryUserInfoById(User user);
+    User queryUserInfoById(Long uid);
+
+    User queryUserInfoByInfo(User user);
 
 }

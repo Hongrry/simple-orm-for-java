@@ -23,6 +23,10 @@ public class BaseBuilder {
         this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     }
 
+    protected Boolean booleanValueOf(String value, Boolean defaultValue) {
+        return value == null ? defaultValue : Boolean.valueOf(value);
+    }
+
     public Configuration getConfiguration() {
         return configuration;
     }
