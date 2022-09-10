@@ -4,6 +4,7 @@ import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.session.ResultHandler;
+import cn.hruit.mybatis.session.RowBounds;
 import cn.hruit.mybatis.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +31,11 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        return doQuery(ms, parameter, resultHandler, boundSql);
+        return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
     @Override
@@ -97,8 +98,10 @@ public abstract class BaseExecutor implements Executor {
      * @param parameter     参数
      * @param resultHandler 结果处理器
      * @param boundSql      SQL封装
+     * @param rowBounds     分页记录限制
      * @return 查询结果
+     * @return
      */
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
 }

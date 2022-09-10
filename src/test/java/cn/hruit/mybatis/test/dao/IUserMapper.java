@@ -7,4 +7,6 @@ public interface IUserMapper {
 
     User queryUserInfoByInfo(User user);
 
+    Long selectUserCount(Long uid);
+
 }

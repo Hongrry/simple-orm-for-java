@@ -4,6 +4,7 @@ package cn.hruit.mybatis.executor;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.session.ResultHandler;
+import cn.hruit.mybatis.session.RowBounds;
 import cn.hruit.mybatis.transaction.Transaction;
 
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ public interface Executor {
      * @return 查询结果
      * @throws SQLException 异常
      */
-    <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     /**
      * 提交事务

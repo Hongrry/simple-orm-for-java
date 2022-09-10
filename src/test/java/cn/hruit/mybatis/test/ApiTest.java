@@ -47,4 +47,12 @@ public class ApiTest {
         User user = userMapper.queryUserInfoByInfo(req);
         System.out.println(JSON.toJSONString(user));
     }
+
+    @Test
+    public void selectUserCount() {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        Long count = userMapper.selectUserCount(1L);
+        System.out.println(JSON.toJSONString(count));
+    }
 }

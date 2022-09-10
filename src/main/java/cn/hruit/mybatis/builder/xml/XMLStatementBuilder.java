@@ -1,7 +1,7 @@
 package cn.hruit.mybatis.builder.xml;
 
 import cn.hruit.mybatis.builder.BaseBuilder;
-import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.builder.MapperBuilderAssistant;
 import cn.hruit.mybatis.mapping.SqlCommandType;
 import cn.hruit.mybatis.mapping.SqlSource;
 import cn.hruit.mybatis.scripting.LanguageDriver;
@@ -17,13 +17,14 @@ import java.util.Locale;
  **/
 public class XMLStatementBuilder extends BaseBuilder {
 
-    private String currentNamespace;
+    private MapperBuilderAssistant builderAssistant;
+
     private Element element;
 
-    public XMLStatementBuilder(Configuration configuration, Element element, String currentNamespace) {
+    public XMLStatementBuilder(Configuration configuration, Element element, MapperBuilderAssistant builderAssistant) {
         super(configuration);
         this.element = element;
-        this.currentNamespace = currentNamespace;
+        this.builderAssistant = builderAssistant;
     }
 
     /**
@@ -38,6 +39,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         // 参数类型
         String parameterType = element.attributeValue("parameterType");
         Class<?> parameterTypeClass = resolveAlias(parameterType);
+        // 外部应用 resultMap
+        String resultMap = element.attributeValue("resultMap");
         // 结果类型
         String resultType = element.attributeValue("resultType");
         Class<?> resultTypeClass = resolveAlias(resultType);
@@ -51,10 +54,13 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         SqlSource sqlSource = langDriver.createSqlSource(configuration, element, parameterTypeClass);
 
-        MappedStatement mappedStatement = new MappedStatement.Builder(configuration, currentNamespace + "." + id, sqlCommandType, sqlSource, resultTypeClass).build();
-
-        // 添加解析 SQL
-        configuration.addMappedStatement(mappedStatement);
+        builderAssistant.addMappedStatement(id,
+                sqlSource,
+                sqlCommandType,
+                parameterTypeClass,
+                resultMap,
+                resultTypeClass,
+                langDriver);
 
     }
 }

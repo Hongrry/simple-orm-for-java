@@ -9,10 +9,15 @@
         where id = #{id}
     </select>
     <select id="queryUserInfoByInfo" resultType="user">
-        SELECT id, user_head, user_name, user_head
+        SELECT id, user_head, user_name, create_time
         FROM user
         where id = #{id}
           and user_id = #{userId}
+    </select>
+    <select id="selectUserCount" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM user
+        where id = #{id}
     </select>
 
 </mapper>

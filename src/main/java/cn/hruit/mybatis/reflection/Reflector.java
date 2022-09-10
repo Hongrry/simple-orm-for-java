@@ -251,7 +251,7 @@ public class Reflector {
             for (Class<?> anInterfaces : interfaces) {
                 addUniqueMethods(uniqueMethods, anInterfaces.getMethods());
             }
-            currentClass = clazz.getSuperclass();
+            currentClass = currentClass.getSuperclass();
         }
         Collection<Method> methods = uniqueMethods.values();
         return methods.toArray(new Method[0]);

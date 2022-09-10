@@ -9,7 +9,8 @@ public interface ResultHandler {
 
     /**
      * 处理结果
+     *
+     * @param context 结果上下文
      */
-    void handleResult();
-
+    void handleResult(ResultContext context);
 }

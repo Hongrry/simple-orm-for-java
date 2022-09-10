@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.type;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -21,5 +22,15 @@ public interface TypeHandler<T> {
      * @throws SQLException 异常
      */
     void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
+
+    /**
+     * 获取结果
+     *
+     * @param rs         结果集
+     * @param columnName 列名
+     * @return 结果
+     * @throws SQLException 异常
+     */
+    T getResult(ResultSet rs, String columnName) throws SQLException;
 
 }

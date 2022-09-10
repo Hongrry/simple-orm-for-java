@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.builder.xml;
 
 import cn.hruit.mybatis.builder.BaseBuilder;
+import cn.hruit.mybatis.builder.MapperBuilderAssistant;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.session.Configuration;
 import org.dom4j.Document;
@@ -20,6 +21,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private Element element;
     private String resource;
+    private MapperBuilderAssistant builderAssistant;
     private String currentNamespace;
 
     public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource) throws DocumentException {
@@ -28,6 +30,8 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private XMLMapperBuilder(Document document, Configuration configuration, String resource) {
         super(configuration);
+        this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
+
         this.element = document.getRootElement();
         this.resource = resource;
     }
@@ -52,6 +56,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         if ("".equals(currentNamespace)) {
             throw new RuntimeException("Mapper's namespace cannot be empty");
         }
+        builderAssistant.setCurrentNamespace(currentNamespace);
 
         // 2.配置select|insert|update|delete
         buildStatementFromContext(element.elements("select"));
@@ -59,7 +64,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private void buildStatementFromContext(List<Element> list) {
         for (Element element : list) {
-            final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, currentNamespace);
+            final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, builderAssistant);
             statementParser.parseStatementNode();
         }
     }
