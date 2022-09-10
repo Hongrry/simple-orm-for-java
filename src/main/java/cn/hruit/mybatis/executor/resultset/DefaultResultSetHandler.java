@@ -134,12 +134,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, List<Class<?>> constructorArgTypes, List<Object> constructorArgs, String columnPrefix) throws SQLException {
         final Class<?> resultType = resultMap.getType();
         final MetaClass metaType = MetaClass.forClass(resultType, configuration.getReflectorFactory());
-        if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
+        if (hasTypeHandlerForResultObject(rsw, resultType)) {
+            return createPrimitiveResultObject(rsw, resultMap, columnPrefix);
+        } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
             // 普通的Bean对象类型
             return objectFactory.create(resultType);
-        }
-        if (resultType.equals(Long.class)) {
-            return new Long(0);
         }
         throw new RuntimeException("Do not know how to create an instance of " + resultType);
     }
@@ -175,5 +174,26 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             }
         }
         return foundValues;
+    }
+
+    private Object createPrimitiveResultObject(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
+        final Class<?> resultType = resultMap.getType();
+        final String columnName;
+        if (!resultMap.getResultMappings().isEmpty()) {
+            final List<ResultMapping> resultMappingList = resultMap.getResultMappings();
+            final ResultMapping mapping = resultMappingList.get(0);
+            columnName = mapping.getColumn();
+        } else {
+            columnName = rsw.getColumnNames().get(0);
+        }
+        final TypeHandler<?> typeHandler = rsw.getTypeHandler(resultType, columnName);
+        return typeHandler.getResult(rsw.getResultSet(), columnName);
+    }
+
+    private boolean hasTypeHandlerForResultObject(ResultSetWrapper rsw, Class<?> resultType) {
+        if (rsw.getColumnNames().size() == 1) {
+            return typeHandlerRegistry.hasTypeHandler(resultType, rsw.getJdbcType(rsw.getColumnNames().get(0)));
+        }
+        return typeHandlerRegistry.hasTypeHandler(resultType);
     }
 }
