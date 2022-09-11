@@ -73,6 +73,11 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
+    public int delete(String statement, Object parameter) {
+        return update(statement, parameter);
+    }
+
+    @Override
     public Configuration getConfiguration() {
         return configuration;
     }

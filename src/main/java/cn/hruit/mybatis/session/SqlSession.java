@@ -64,6 +64,16 @@ public interface SqlSession {
     int update(String statement, Object parameter);
 
     /**
+     * Execute a delete statement. The number of rows affected will be returned.
+     * 删除记录
+     *
+     * @param statement Unique identifier matching the statement to execute.
+     * @param parameter A parameter object to pass to the statement.
+     * @return int The number of rows affected by the delete. 返回的是受影响的行数
+     */
+    int delete(String statement, Object parameter);
+
+    /**
      * Retrieves current configuration
      * 得到配置
      *

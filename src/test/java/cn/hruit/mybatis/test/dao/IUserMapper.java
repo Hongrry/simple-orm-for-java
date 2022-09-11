@@ -14,4 +14,6 @@ public interface IUserMapper {
     Integer insertUserInfo(User user);
 
     Integer updateUserInfo(User user);
+
+    Integer deleteUserInfoByUserId(String userId);
 }

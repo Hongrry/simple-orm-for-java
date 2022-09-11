@@ -84,4 +84,15 @@ public class ApiTest {
 
         sqlSession.commit();
     }
+
+    @Test
+    public void deleteUserInfoByUserId() {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+
+        Integer integer = userMapper.deleteUserInfoByUserId("10002");
+        System.out.println(integer);
+
+        sqlSession.commit();
+    }
 }
