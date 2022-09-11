@@ -83,6 +83,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
         if (resultMap != null) {
             // TODO：暂无Map结果映射配置，本章节不添加此逻辑
+            ResultMap map = configuration.getResultMap(resultMap);
+            resultMaps.add(map);
         }
         /*
          * 通常使用 resultType 即可满足大部分场景

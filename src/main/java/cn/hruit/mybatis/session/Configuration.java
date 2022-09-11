@@ -13,6 +13,7 @@ import cn.hruit.mybatis.executor.statement.StatementHandler;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.mapping.ResultMap;
 import cn.hruit.mybatis.reflection.DefaultReflectorFactory;
 import cn.hruit.mybatis.reflection.MetaObject;
 import cn.hruit.mybatis.reflection.ReflectorFactory;
@@ -46,6 +47,10 @@ public class Configuration {
     private Environment environment;
 
     private final MapperRegistry registry = new MapperRegistry();
+    /**
+     * ResultMap
+     */
+    protected final Map<String, ResultMap> resultMaps = new HashMap<>();
     /**
      * 映射的语句，存在Map里
      */
@@ -187,5 +192,13 @@ public class Configuration {
 
     public ObjectFactory getObjectFactory() {
         return objectFactory;
+    }
+
+    public void addResultMap(ResultMap resultMap) {
+        resultMaps.put(resultMap.getId(), resultMap);
+    }
+
+    public ResultMap getResultMap(String id) {
+        return resultMaps.get(id);
     }
 }

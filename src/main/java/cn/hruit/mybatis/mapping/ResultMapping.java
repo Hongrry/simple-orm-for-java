@@ -24,9 +24,21 @@ public class ResultMapping {
     public static class Builder {
         private ResultMapping resultMapping = new ResultMapping();
 
+        public Builder(String column, String property) {
+            this.resultMapping.column = column;
+            this.resultMapping.property = property;
+        }
+
+        public ResultMapping build() {
+            return resultMapping;
+        }
     }
 
     public String getColumn() {
         return column;
+    }
+
+    public String getProperty() {
+        return property;
     }
 }

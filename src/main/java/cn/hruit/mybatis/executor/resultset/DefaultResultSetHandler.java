@@ -156,7 +156,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                     continue;
                 }
             }
-            final String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
+            final String property = findProperty(propertyName, metaObject, resultMap);
             if (property != null && metaObject.hasSetter(property)) {
                 final Class<?> propertyType = metaObject.getSetterType(property);
                 if (typeHandlerRegistry.hasTypeHandler(propertyType)) {
@@ -174,6 +174,19 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             }
         }
         return foundValues;
+    }
+
+    private String findProperty(String propertyName, MetaObject metaObject, ResultMap resultMap) {
+        String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
+        if (property == null) {
+            for (ResultMapping mapping : resultMap.getResultMappings()) {
+                if (mapping.getColumn().equals(propertyName)) {
+                    property = mapping.getProperty();
+                    break;
+                }
+            }
+        }
+        return property;
     }
 
     private Object createPrimitiveResultObject(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
