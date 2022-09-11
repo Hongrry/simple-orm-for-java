@@ -31,12 +31,21 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
         return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
+
+    @Override
+    public int update(MappedStatement ms, Object parameter) throws SQLException {
+        if (closed) {
+            throw new RuntimeException("Executor was closed.");
+        }
+        return doUpdate(ms, parameter);
+    }
+
 
     @Override
     public void commit(boolean required) throws SQLException {
@@ -102,6 +111,14 @@ public abstract class BaseExecutor implements Executor {
      * @return 查询结果
      * @return
      */
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException;
 
+    /**
+     * 执行更新
+     *
+     * @param ms        声明包装
+     * @param parameter 参数
+     * @return 更新结果
+     */
+    protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
 }

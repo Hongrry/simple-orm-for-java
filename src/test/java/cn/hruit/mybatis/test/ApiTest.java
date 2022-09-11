@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.UUID;
 
 /**
  * @author HONGRRY
@@ -54,5 +55,19 @@ public class ApiTest {
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
         Long count = userMapper.selectUserCount(1L);
         System.out.println(JSON.toJSONString(count));
+    }
+
+    @Test
+    public void addUserTest() {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        User req = new User();
+        req.setUserHead(UUID.randomUUID().toString().substring(0, 10));
+        req.setUserName("Hongrry" + Math.random() * 100);
+        req.setUserId(UUID.randomUUID().toString().replace("-", "").substring(0, 9));
+        Integer integer = userMapper.addUser(req);
+        System.out.println(integer);
+
+        sqlSession.commit();
     }
 }

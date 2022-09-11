@@ -28,13 +28,15 @@ public class MapperMethod {
         Object result = null;
         switch (command.getType()) {
             case INSERT:
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = sqlSession.insert(command.getName(), param);
                 break;
             case DELETE:
                 break;
             case UPDATE:
                 break;
             case SELECT:
-                Object param = method.convertArgsToSqlCommandParam(args);
+                param = method.convertArgsToSqlCommandParam(args);
                 result = sqlSession.selectOne(command.getName(), param);
                 break;
             default:

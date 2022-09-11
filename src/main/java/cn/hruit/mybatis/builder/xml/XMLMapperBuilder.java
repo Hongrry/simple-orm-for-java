@@ -59,6 +59,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         builderAssistant.setCurrentNamespace(currentNamespace);
 
         // 2.配置select|insert|update|delete
+        buildStatementFromContext(element.elements("insert"));
         buildStatementFromContext(element.elements("select"));
     }
 

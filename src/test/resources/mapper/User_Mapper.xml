@@ -19,5 +19,9 @@
         FROM user
         where id = #{id}
     </select>
+    <insert id="addUser">
+        insert into user (user_id, user_name, user_head, create_time, update_time)
+        values (#{userId}, #{userName}, #{userHead}, now(), now());
+    </insert>
 
 </mapper>

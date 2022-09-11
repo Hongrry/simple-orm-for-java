@@ -9,4 +9,5 @@ public interface IUserMapper {
 
     Long selectUserCount(Long uid);
 
+    Integer addUser(User req);
 }
