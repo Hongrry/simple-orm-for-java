@@ -12,4 +12,12 @@ public interface SqlSessionFactory {
      * @return sqlSession
      */
     SqlSession openSession();
+
+    /**
+     * 开启会话
+     *
+     * @param autoCommit 是否自动提交
+     * @return SqlSession
+     */
+    SqlSession openSession(boolean autoCommit);
 }

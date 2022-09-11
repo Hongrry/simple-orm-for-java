@@ -76,13 +76,12 @@ public class ApiTest {
 
     @Test
     public void updateUserInfo() {
-        SqlSession sqlSession = sqlSessionFactory.openSession();
+        SqlSession sqlSession = sqlSessionFactory.openSession(true);
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
 
-        Integer integer = userMapper.updateUserInfo(new User(1L, "10001", "叮当猫"));
+        Integer integer = userMapper.updateUserInfo(new User(1L, "10001", "叮当"));
         System.out.println(integer);
 
-        sqlSession.commit();
     }
 
     @Test
