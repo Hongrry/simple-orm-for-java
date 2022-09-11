@@ -27,18 +27,27 @@ public class MapperMethod {
     public Object execute(SqlSession sqlSession, Object[] args) {
         Object result = null;
         switch (command.getType()) {
-            case INSERT:
+            case INSERT: {
                 Object param = method.convertArgsToSqlCommandParam(args);
                 result = sqlSession.insert(command.getName(), param);
                 break;
+            }
             case DELETE:
                 break;
-            case UPDATE:
+            case UPDATE: {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = sqlSession.update(command.getName(), param);
                 break;
-            case SELECT:
-                param = method.convertArgsToSqlCommandParam(args);
-                result = sqlSession.selectOne(command.getName(), param);
+            }
+            case SELECT: {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                if (method.returnsMany) {
+                    result = sqlSession.selectList(command.getName(), param);
+                } else {
+                    result = sqlSession.selectOne(command.getName(), param);
+                }
                 break;
+            }
             default:
                 throw new RuntimeException("Unknown execution method for: " + command.getName());
         }
@@ -74,11 +83,17 @@ public class MapperMethod {
      */
     public static class MethodSignature {
 
+
+        private final boolean returnsMany;
+        private final Class<?> returnType;
         private final SortedMap<Integer, String> params;
 
         public MethodSignature(Configuration configuration, Method method) {
+            this.returnType = method.getReturnType();
+            this.returnsMany = (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
             this.params = Collections.unmodifiableSortedMap(getParams(method));
         }
+
 
         public Object convertArgsToSqlCommandParam(Object[] args) {
             final int paramCount = params.size();

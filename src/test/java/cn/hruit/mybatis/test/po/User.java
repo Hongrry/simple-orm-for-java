@@ -16,6 +16,15 @@ public class User {
     // 更新时间
     private Date updateTime;
 
+    public User() {
+    }
+
+    public User(Long id, String userId, String userName) {
+        this.id = id;
+        this.userId = userId;
+        this.userName = userName;
+    }
+
     public Long getId() {
         return id;
     }

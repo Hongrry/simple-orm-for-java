@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,22 +40,24 @@ public class ApiTest {
     }
 
     @Test
-    public void queryUserInfoByInfo() {
+    public void queryUserInfo() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
         User req = new User();
         req.setId(1L);
         req.setUserId("10001");
-        User user = userMapper.queryUserInfoByInfo(req);
+        User user = userMapper.queryUserInfo(req);
         System.out.println(JSON.toJSONString(user));
     }
 
     @Test
-    public void selectUserCount() {
+    public void queryUserInfoList() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
-        Long count = userMapper.selectUserCount(1L);
-        System.out.println(JSON.toJSONString(count));
+        List<User> users = userMapper.queryUserInfoList();
+        for (User user : users) {
+            System.out.println(JSON.toJSONString(user));
+        }
     }
 
     @Test
@@ -65,7 +68,18 @@ public class ApiTest {
         req.setUserHead(UUID.randomUUID().toString().substring(0, 10));
         req.setUserName("Hongrry" + Math.random() * 100);
         req.setUserId(UUID.randomUUID().toString().replace("-", "").substring(0, 9));
-        Integer integer = userMapper.addUser(req);
+        Integer integer = userMapper.insertUserInfo(req);
+        System.out.println(integer);
+
+        sqlSession.commit();
+    }
+
+    @Test
+    public void updateUserInfo() {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+
+        Integer integer = userMapper.updateUserInfo(new User(1L, "10001", "叮当猫"));
         System.out.println(integer);
 
         sqlSession.commit();
