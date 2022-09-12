@@ -146,9 +146,14 @@ public class XmlConfigBuilder extends BaseBuilder {
         for (Element mapper : mapperList) {
             // package 和 class 怎么加载SQL语句
             String resource = mapper.attributeValue("resource");
-            InputStream inputStream = Resources.getResourceAsStream(resource);
-            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource);
-            mapperParser.parse();
+            String className = mapper.attributeValue("class");
+            if (resource != null && className == null) {
+                InputStream inputStream = Resources.getResourceAsStream(resource);
+                XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource);
+                mapperParser.parse();
+            } else if (resource == null && className != null) {
+                configuration.addMapper(Resources.classForName(className));
+            }
         }
     }
 

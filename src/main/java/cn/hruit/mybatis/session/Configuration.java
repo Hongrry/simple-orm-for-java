@@ -45,7 +45,7 @@ public class Configuration {
     protected boolean mapUnderscoreToCamelCase;
     private Environment environment;
 
-    private final MapperRegistry registry = new MapperRegistry();
+    private final MapperRegistry registry = new MapperRegistry(this);
     /**
      * 映射的语句，存在Map里
      */

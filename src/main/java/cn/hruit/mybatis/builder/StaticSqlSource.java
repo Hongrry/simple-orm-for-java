@@ -19,7 +19,7 @@ public class StaticSqlSource implements SqlSource {
     private Configuration configuration;
 
 
-    public StaticSqlSource(Configuration configuration, String sql, List<ParameterMapping> parameterMappings) {
+    public  StaticSqlSource(Configuration configuration, String sql, List<ParameterMapping> parameterMappings) {
         this.sql = sql;
         this.parameterMappings = parameterMappings;
         this.configuration = configuration;

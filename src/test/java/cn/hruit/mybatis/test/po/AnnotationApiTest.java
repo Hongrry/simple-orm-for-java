@@ -1,11 +1,10 @@
-package cn.hruit.mybatis.test;
+package cn.hruit.mybatis.test.po;
 
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.session.SqlSession;
 import cn.hruit.mybatis.session.SqlSessionFactory;
 import cn.hruit.mybatis.session.SqlSessionFactoryBuilder;
-import cn.hruit.mybatis.test.dao.IUserMapper;
-import cn.hruit.mybatis.test.po.User;
+import cn.hruit.mybatis.test.dao.IAnnotationUserMapper;
 import com.alibaba.fastjson.JSON;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +19,7 @@ import java.util.UUID;
  * @description
  * @date 2022/08/22 13:44
  **/
-public class ApiTest {
+public class AnnotationApiTest {
     SqlSessionFactory sqlSessionFactory;
 
     @Before
@@ -34,7 +33,7 @@ public class ApiTest {
     public void queryUserInfoById() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         System.out.println(sqlSession.getConfiguration().isMapUnderscoreToCamelCase());
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
         User user = userMapper.queryUserInfoById(1L);
         System.out.println(JSON.toJSONString(user));
     }
@@ -42,7 +41,7 @@ public class ApiTest {
     @Test
     public void queryUserInfo() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
         User req = new User();
         req.setId(1L);
         req.setUserId("10001");
@@ -53,7 +52,7 @@ public class ApiTest {
     @Test
     public void queryUserInfoList() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
         List<User> users = userMapper.queryUserInfoList();
         for (User user : users) {
             System.out.println(JSON.toJSONString(user));
@@ -63,7 +62,7 @@ public class ApiTest {
     @Test
     public void addUserTest() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
         User req = new User();
         req.setUserHead(UUID.randomUUID().toString().substring(0, 10));
         req.setUserName("Hongrry" + Math.random() * 100);
@@ -77,9 +76,9 @@ public class ApiTest {
     @Test
     public void updateUserInfo() {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
 
-        Integer integer = userMapper.updateUserInfo(new User(1L, "10001", "叮当猫"));
+        Integer integer = userMapper.updateUserInfo(new User(1L, "10001", "猫"));
         System.out.println(integer);
 
     }
@@ -87,7 +86,7 @@ public class ApiTest {
     @Test
     public void deleteUserInfoByUserId() {
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserMapper userMapper = sqlSession.getMapper(IUserMapper.class);
+        IAnnotationUserMapper userMapper = sqlSession.getMapper(IAnnotationUserMapper.class);
 
         Integer integer = userMapper.deleteUserInfoByUserId("10002");
         System.out.println(integer);

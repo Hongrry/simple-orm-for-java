@@ -1,7 +1,9 @@
 package cn.hruit.mybatis.binding;
 
+import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.session.SqlSession;
 import cn.hutool.core.lang.ClassScanner;
+import cn.hruit.mybatis.builder.annotation.MapperAnnotationBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +16,11 @@ import java.util.Set;
  **/
 public class MapperRegistry {
     private Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
+    private Configuration configuration;
 
+    public MapperRegistry(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         MapperProxyFactory<?> mapperProxyFactory = knownMappers.get(type);
@@ -30,6 +36,9 @@ public class MapperRegistry {
             if (hasMapper(type)) {
                 throw new RuntimeException("Type " + type + " is already known to the MapperRegistry.");
             }
+            // 解析注解
+            MapperAnnotationBuilder parser = new MapperAnnotationBuilder(configuration, type);
+            parser.parse();
             knownMappers.put(type, new MapperProxyFactory<>(type));
         }
     }
