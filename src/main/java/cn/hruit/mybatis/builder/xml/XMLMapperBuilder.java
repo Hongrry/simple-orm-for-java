@@ -63,7 +63,11 @@ public class XMLMapperBuilder extends BaseBuilder {
         // 解析ResultMap
         resultMapElements(element.elements("resultMap"));
         // 2.配置select|insert|update|delete
-        buildStatementFromContext(element.elements("select"));
+        buildStatementFromContext(element.elements("select"),
+                element.elements("insert"),
+                element.elements("update"),
+                element.elements("delete")
+        );
     }
 
     private void resultMapElements(List<Element> resultMaps) {
@@ -102,10 +106,12 @@ public class XMLMapperBuilder extends BaseBuilder {
         configuration.addResultMap(builder.build());
     }
 
-    private void buildStatementFromContext(List<Element> list) {
-        for (Element element : list) {
-            final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, builderAssistant);
-            statementParser.parseStatementNode();
+    private final void buildStatementFromContext(List<Element>... lists) {
+        for (List<Element> list : lists) {
+            for (Element element : list) {
+                final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, builderAssistant);
+                statementParser.parseStatementNode();
+            }
         }
     }
 }

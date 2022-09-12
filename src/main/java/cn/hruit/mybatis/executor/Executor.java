@@ -19,16 +19,26 @@ public interface Executor {
     ResultHandler NO_RESULT_HANDLER = null;
 
     /**
+     * 更新
+     *
+     * @param ms        声明包装
+     * @param parameter 参数
+     * @return 更新结果
+     * @throws SQLException 异常
+     */
+    int update(MappedStatement ms, Object parameter) throws SQLException;
+
+    /**
      * 查询
      *
      * @param ms            声明包装
      * @param parameter     参数
      * @param resultHandler 结果处理器
+     * @param rowBounds     分页限制
      * @param boundSql      SQL 封装
      * @return 查询结果
-     * @throws SQLException 异常
      */
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException;
 
     /**
      * 提交事务

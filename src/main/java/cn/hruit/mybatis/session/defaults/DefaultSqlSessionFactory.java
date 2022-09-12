@@ -25,11 +25,16 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
+        return openSession(false);
+    }
+
+    @Override
+    public SqlSession openSession(boolean autoCommit) {
         Transaction tx = null;
         Environment environment = configuration.getEnvironment();
         try {
             TransactionFactory transactionFactory = environment.getTransactionFactory();
-            tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, false);
+            tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, autoCommit);
             Executor executor = configuration.newExecutor(tx);
             return new DefaultSqlSession(configuration, executor);
         } catch (Exception e) {
