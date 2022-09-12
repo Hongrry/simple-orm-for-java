@@ -155,6 +155,12 @@ public class XmlConfigBuilder extends BaseBuilder {
                 configuration.addMapper(Resources.classForName(className));
             }
         }
+        // 解析 package
+        List<Element> packages = mappers.elements("package");
+        for (Element basePackage : packages) {
+            String basePackageName = basePackage.attributeValue("name");
+            configuration.addMappers(basePackageName);
+        }
     }
 
     private Properties settingsAsProperties(Element settings) {

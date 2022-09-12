@@ -98,6 +98,10 @@ public class Configuration {
         registry.addMapper(type);
     }
 
+    public void addMappers(String basePackage) {
+        registry.addMappers(basePackage);
+    }
+
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return registry.getMapper(type, sqlSession);
     }
