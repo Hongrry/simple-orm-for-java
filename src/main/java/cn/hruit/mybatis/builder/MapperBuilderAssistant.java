@@ -1,11 +1,10 @@
 package cn.hruit.mybatis.builder;
 
-import cn.hruit.mybatis.mapping.MappedStatement;
-import cn.hruit.mybatis.mapping.SqlCommandType;
-import cn.hruit.mybatis.mapping.SqlSource;
+import cn.hruit.mybatis.mapping.*;
+import cn.hruit.mybatis.reflection.MetaClass;
 import cn.hruit.mybatis.scripting.LanguageDriver;
 import cn.hruit.mybatis.session.Configuration;
-import cn.hruit.mybatis.mapping.ResultMap;
+import cn.hruit.mybatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +81,11 @@ public class MapperBuilderAssistant extends BaseBuilder {
         List<ResultMap> resultMaps = new ArrayList<>();
 
         if (resultMap != null) {
-            // TODO：暂无Map结果映射配置，本章节不添加此逻辑
-            ResultMap map = configuration.getResultMap(resultMap);
-            resultMaps.add(map);
+            // 存在多个ResultMap 怎么选择呢
+            String[] resultMapNames = resultMap.split(",");
+            for (String resultMapName : resultMapNames) {
+                resultMaps.add(configuration.getResultMap(resultMapName.trim()));
+            }
         }
         /*
          * 通常使用 resultType 即可满足大部分场景
@@ -102,4 +103,48 @@ public class MapperBuilderAssistant extends BaseBuilder {
         statementBuilder.resultMaps(resultMaps);
     }
 
+    public ResultMapping buildResultMapping(
+            Class<?> resultType,
+            String property,
+            String column,
+            List<ResultFlag> flags) {
+
+        // 为什么还要解析一遍JavaType
+        Class<?> javaTypeClass = resolveResultJavaType(resultType, property, null);
+        TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, null);
+
+        ResultMapping.Builder builder = new ResultMapping.Builder(configuration, property, column, javaTypeClass);
+        builder.typeHandler(typeHandlerInstance);
+        builder.flags(flags);
+        return builder.build();
+    }
+
+    private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
+        if (javaType == null && property != null) {
+            try {
+                MetaClass metaResultType = MetaClass.forClass(resultType, configuration.getReflectorFactory());
+                javaType = metaResultType.getSetterType(property);
+            } catch (Exception ignore) {
+            }
+        }
+        if (javaType == null) {
+            javaType = Object.class;
+        }
+        return javaType;
+    }
+
+    public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
+        // 补全ID全路径，如：cn.bugstack.mybatis.test.dao.IActivityDao + activityMap
+        id = applyCurrentNamespace(id, false);
+
+        ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
+                configuration,
+                id,
+                type,
+                resultMappings);
+
+        ResultMap resultMap = inlineResultMapBuilder.build();
+        configuration.addResultMap(resultMap);
+        return resultMap;
+    }
 }

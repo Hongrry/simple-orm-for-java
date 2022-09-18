@@ -76,4 +76,8 @@ public final class TypeHandlerRegistry {
         // type drives generics here
         return (TypeHandler<T>) handler;
     }
+
+    public TypeHandler<?> getMappingTypeHandler(Class<? extends TypeHandler<?>> typeHandlerType) {
+        return ALL_TYPE_HANDLERS_MAP.get(typeHandlerType);
+    }
 }

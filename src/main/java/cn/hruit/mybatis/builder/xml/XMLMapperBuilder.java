@@ -2,7 +2,9 @@ package cn.hruit.mybatis.builder.xml;
 
 import cn.hruit.mybatis.builder.BaseBuilder;
 import cn.hruit.mybatis.builder.MapperBuilderAssistant;
+import cn.hruit.mybatis.builder.ResultMapResolver;
 import cn.hruit.mybatis.io.Resources;
+import cn.hruit.mybatis.mapping.ResultFlag;
 import cn.hruit.mybatis.mapping.ResultMapping;
 import cn.hruit.mybatis.session.Configuration;
 import org.dom4j.Document;
@@ -83,30 +85,38 @@ public class XMLMapperBuilder extends BaseBuilder {
      * <result column="user_head" property="userHead"/>
      * </resultMap>
      *
-     * @param element
+     * @param resultMapNode
      */
-    private void resultMapElement(Element element) {
-        String id = element.attributeValue("id");
-        String type = element.attributeValue("type");
-        Class<Object> javaType = configuration.getTypeAliasRegistry().resolveAlias(type);
-        ArrayList<ResultMapping> mappings = new ArrayList<>();
-        List<Element> results = element.elements("result");
-        for (Element result : results) {
-            String column = result.attributeValue("column");
-            String property = result.attributeValue("property");
-            ResultMapping.Builder builder = new ResultMapping.Builder(column, property);
-            mappings.add(builder.build());
+    private ResultMap resultMapElement(Element resultMapNode) {
+        String id = resultMapNode.attributeValue("id");
+        String type = resultMapNode.attributeValue("type");
+        Class<Object> typeClass = typeAliasRegistry.resolveAlias(type);
+
+        List<ResultMapping> resultMappings = new ArrayList<>();
+
+        List<Element> resultChildren = resultMapNode.elements();
+        for (Element resultChild : resultChildren) {
+            // ResultFlag 的作用是什么?
+            List<ResultFlag> flags = new ArrayList<>();
+            if ("id".equals(resultChild.getName())) {
+                flags.add(ResultFlag.ID);
+            }
+            // 构建 ResultMapping
+            resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
         }
 
-        ResultMap.Builder builder = new ResultMap.Builder(
-                configuration,
-                currentNamespace + "." + id,
-                javaType, mappings);
-
-        configuration.addResultMap(builder.build());
+        // 创建结果映射解析器
+        ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, resultMappings);
+        return resultMapResolver.resolve();
     }
 
-    private final void buildStatementFromContext(List<Element>... lists) {
+    private ResultMapping buildResultMappingFromContext(Element context, Class<Object> resultType, List<ResultFlag> flags) {
+        String property = context.attributeValue("property");
+        String column = context.attributeValue("column");
+        return builderAssistant.buildResultMapping(resultType, property, column, flags);
+    }
+
+    private void buildStatementFromContext(List<Element>... lists) {
         for (List<Element> list : lists) {
             for (Element element : list) {
                 final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, builderAssistant);

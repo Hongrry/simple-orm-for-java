@@ -6,9 +6,10 @@
         <result column="user_id" property="userId"/>
         <result column="user_name" property="userName"/>
         <result column="user_head" property="userHead"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultMap="userResultMap">
-        SELECT id, user_id, user_name, user_head
+        SELECT id, user_id, user_name, user_head, create_time
         FROM user
         where id = #{id}
     </select>
