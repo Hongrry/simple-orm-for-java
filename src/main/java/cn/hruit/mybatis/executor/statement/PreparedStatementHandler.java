@@ -1,16 +1,14 @@
 package cn.hruit.mybatis.executor.statement;
 
 import cn.hruit.mybatis.executor.Executor;
+import cn.hruit.mybatis.executor.keygen.Jdbc3KeyGenerator;
 import cn.hruit.mybatis.executor.keygen.KeyGenerator;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.session.ResultHandler;
 import cn.hruit.mybatis.session.RowBounds;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -26,6 +24,15 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     @Override
     protected Statement instantiateStatement(Connection connection) throws SQLException {
         String sql = boundSql.getSql();
+        // 2022年9月18日19:19:14 添加 RETURN_GENERATED_KEYS  Jdbc3KeyGenerator才能正常的获取getGeneratedKeys
+        if (mappedStatement.getKeyGenerator() instanceof Jdbc3KeyGenerator) {
+            String[] keyColumnNames = mappedStatement.getKeyColumns();
+            if (keyColumnNames == null) {
+                return connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            } else {
+                return connection.prepareStatement(sql, keyColumnNames);
+            }
+        }
         return connection.prepareStatement(sql);
     }
 
@@ -45,6 +52,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     @Override
     public int update(Statement statement) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;
+        // 2022年9月18日19:15:27 将 execute 更换成 executeUpdate,否则无法获得  getGeneratedKeys
         ps.execute();
         int rows = ps.getUpdateCount();
         Object parameterObject = boundSql.getParameterObject();

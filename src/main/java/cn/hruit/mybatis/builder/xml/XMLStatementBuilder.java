@@ -72,10 +72,14 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
         // keyStatementId 什么时候有什么用
+        // processSelectKeyNodes 会创建一个 id=keyStatementId 的键值构建器
         if (configuration.hasKeyGenerator(keyStatementId)) {
             keyGenerator = configuration.getKeyGenerator(keyStatementId);
         } else {
-            keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
+            String useGeneratedKeys = element.attributeValue("useGeneratedKeys");
+            keyGenerator = booleanValueOf(useGeneratedKeys,
+                    configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
+                    ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
         }
 
         // 调用助手类
@@ -94,6 +98,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
         List<Element> selectKeyNodes = element.elements("selectKey");
         parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver);
+
     }
 
     private void parseSelectKeyNodes(String parentId, List<Element> list, Class<?> parameterTypeClass, LanguageDriver languageDriver) {
