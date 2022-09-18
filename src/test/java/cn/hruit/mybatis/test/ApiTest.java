@@ -70,7 +70,7 @@ public class ApiTest {
         req.setUserId(UUID.randomUUID().toString().replace("-", "").substring(0, 9));
         Integer integer = userMapper.insertUserInfo(req);
         System.out.println(integer);
-
+        System.out.println(req.getId());
         sqlSession.commit();
     }
 

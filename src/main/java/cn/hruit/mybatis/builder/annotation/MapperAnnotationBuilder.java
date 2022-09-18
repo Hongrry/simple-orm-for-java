@@ -6,6 +6,9 @@ import cn.hruit.mybatis.annotations.Select;
 import cn.hruit.mybatis.annotations.Update;
 import cn.hruit.mybatis.binding.MapperMethod;
 import cn.hruit.mybatis.builder.MapperBuilderAssistant;
+import cn.hruit.mybatis.executor.keygen.Jdbc3KeyGenerator;
+import cn.hruit.mybatis.executor.keygen.KeyGenerator;
+import cn.hruit.mybatis.executor.keygen.NoKeyGenerator;
 import cn.hruit.mybatis.mapping.SqlCommandType;
 import cn.hruit.mybatis.mapping.SqlSource;
 import cn.hruit.mybatis.scripting.LanguageDriver;
@@ -58,22 +61,36 @@ public class MapperAnnotationBuilder {
     }
 
     private void parseStatement(Method method) {
-        Class<?> parameterType = getParameterType(method);
+        Class<?> parameterTypeClass = getParameterType(method);
         LanguageDriver languageDriver = getLanguageDriver(method);
-        SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterType, languageDriver);
+        SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
         if (sqlSource != null) {
-            String id = method.getName();
-
+            String mappedStatementId = method.getName();
             SqlCommandType sqlCommandType = getSqlCommandType(method);
-            String resultMap = null;
+
+            KeyGenerator keyGenerator;
+            String keyProperty = "id";
+            if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
+                keyGenerator = configuration.isUseGeneratedKeys() ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
+            } else {
+                keyGenerator = new NoKeyGenerator();
+            }
+
+            boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+
+            String resultMapId = null;
             Class<?> resultType = getReturnType(method);
+
+            // 调用助手类
             assistant.addMappedStatement(
-                    id,
+                    mappedStatementId,
                     sqlSource,
                     sqlCommandType,
-                    parameterType,
-                    resultMap,
-                    resultType,
+                    parameterTypeClass,
+                    resultMapId,
+                    getReturnType(method),
+                    keyGenerator,
+                    keyProperty,
                     languageDriver
             );
         }

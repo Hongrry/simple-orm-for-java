@@ -1,5 +1,8 @@
 package cn.hruit.mybatis.mapping;
 
+import cn.hruit.mybatis.executor.keygen.Jdbc3KeyGenerator;
+import cn.hruit.mybatis.executor.keygen.KeyGenerator;
+import cn.hruit.mybatis.executor.keygen.NoKeyGenerator;
 import cn.hruit.mybatis.scripting.LanguageDriver;
 import cn.hruit.mybatis.session.Configuration;
 
@@ -11,7 +14,7 @@ import java.util.List;
  * @author HONGRRY
  */
 public class MappedStatement {
-
+    private String resource;
     private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
@@ -19,6 +22,9 @@ public class MappedStatement {
     Class<?> resultType;
     private LanguageDriver lang;
     private List<ResultMap> resultMaps;
+    private KeyGenerator keyGenerator;
+    private String[] keyProperties;
+    private String[] keyColumns;
 
     MappedStatement() {
         // constructor disabled
@@ -27,6 +33,18 @@ public class MappedStatement {
     public BoundSql getBoundSql(Object parameterObject) {
         // 调用 SqlSource#getBoundSql
         return sqlSource.getBoundSql(parameterObject);
+    }
+
+    public String[] getKeyProperties() {
+        return keyProperties;
+    }
+
+    public String[] getKeyColumns() {
+        return keyColumns;
+    }
+
+    public KeyGenerator getKeyGenerator() {
+        return keyGenerator;
     }
 
     /**
@@ -42,6 +60,7 @@ public class MappedStatement {
             mappedStatement.sqlCommandType = sqlCommandType;
             mappedStatement.sqlSource = sqlSource;
             mappedStatement.resultType = resultType;
+            mappedStatement.keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
             mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 
@@ -49,6 +68,11 @@ public class MappedStatement {
             assert mappedStatement.configuration != null;
             assert mappedStatement.id != null;
             return mappedStatement;
+        }
+
+        public Builder resource(String resource) {
+            mappedStatement.resource = resource;
+            return this;
         }
 
         public String id() {
@@ -60,6 +84,23 @@ public class MappedStatement {
             return this;
         }
 
+        public Builder keyGenerator(KeyGenerator keyGenerator) {
+            mappedStatement.keyGenerator = keyGenerator;
+            return this;
+        }
+
+        public Builder keyProperty(String keyProperty) {
+            mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
+            return this;
+        }
+    }
+
+    private static String[] delimitedStringToArray(String in) {
+        if (in == null || in.trim().length() == 0) {
+            return null;
+        } else {
+            return in.split(",");
+        }
     }
 
     public Configuration getConfiguration() {

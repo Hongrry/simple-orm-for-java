@@ -30,11 +30,12 @@ public class JdbcTransaction implements Transaction {
 
     @Override
     public Connection getConnection() throws SQLException {
-        if (null == connection) {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(autoCommit);
-            connection.setTransactionIsolation(level.getLevel());
+        if (connection != null) {
+            return connection;
         }
+        connection = dataSource.getConnection();
+        connection.setAutoCommit(autoCommit);
+        connection.setTransactionIsolation(level.getLevel());
         return connection;
     }
 

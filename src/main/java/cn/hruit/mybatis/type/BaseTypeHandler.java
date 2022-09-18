@@ -31,6 +31,10 @@ public abstract class BaseTypeHandler<T> implements TypeHandler<T> {
         return getNullableResult(rs, columnName);
     }
 
+    @Override
+    public T getResult(ResultSet rs, int columnIndex) throws SQLException {
+        return getNullableResult(rs, columnIndex);
+    }
 
     /**
      * 获取非空值
@@ -41,6 +45,16 @@ public abstract class BaseTypeHandler<T> implements TypeHandler<T> {
      * @throws SQLException 异常
      */
     protected abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;
+
+    /**
+     * 获取非空值
+     *
+     * @param rs          结果集
+     * @param columnIndex 列名
+     * @return 结果
+     * @throws SQLException 异常
+     */
+    protected abstract T getNullableResult(ResultSet rs, int columnIndex) throws SQLException;
 
     /**
      * 设置非空参数

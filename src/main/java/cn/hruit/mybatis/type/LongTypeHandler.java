@@ -16,6 +16,11 @@ public class LongTypeHandler extends BaseTypeHandler<Long> {
     }
 
     @Override
+    protected Long getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        return rs.getLong(columnIndex);
+    }
+
+    @Override
     protected void setNonNullParameter(PreparedStatement ps, int i, Long parameter, JdbcType jdbcType) throws SQLException {
         ps.setLong(i, parameter);
     }

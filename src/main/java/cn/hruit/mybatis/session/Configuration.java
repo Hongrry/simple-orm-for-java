@@ -5,6 +5,7 @@ import cn.hruit.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import cn.hruit.mybatis.executor.Executor;
 import cn.hruit.mybatis.executor.SimpleExecutor;
+import cn.hruit.mybatis.executor.keygen.KeyGenerator;
 import cn.hruit.mybatis.executor.paramter.ParameterHandler;
 import cn.hruit.mybatis.executor.resultset.DefaultResultSetHandler;
 import cn.hruit.mybatis.executor.resultset.ResultSetHandler;
@@ -45,12 +46,13 @@ public class Configuration {
      */
     protected boolean mapUnderscoreToCamelCase;
     private Environment environment;
-
+    protected boolean useGeneratedKeys = false;
     private final MapperRegistry registry = new MapperRegistry(this);
     /**
      * ResultMap
      */
     protected final Map<String, ResultMap> resultMaps = new HashMap<>();
+    protected final Map<String, KeyGenerator> keyGenerators = new HashMap<>();
     /**
      * 映射的语句，存在Map里
      */
@@ -204,5 +206,26 @@ public class Configuration {
 
     public ResultMap getResultMap(String id) {
         return resultMaps.get(id);
+    }
+
+
+    public boolean isUseGeneratedKeys() {
+        return useGeneratedKeys;
+    }
+
+    public void setUseGeneratedKeys(boolean useGeneratedKeys) {
+        this.useGeneratedKeys = useGeneratedKeys;
+    }
+
+    public void addKeyGenerator(String id, KeyGenerator keyGenerator) {
+        keyGenerators.put(id, keyGenerator);
+    }
+
+    public KeyGenerator getKeyGenerator(String id) {
+        return keyGenerators.get(id);
+    }
+
+    public boolean hasKeyGenerator(String id) {
+        return keyGenerators.containsKey(id);
     }
 }

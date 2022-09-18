@@ -16,6 +16,11 @@ public class UnknownTypeHandler extends BaseTypeHandler<Object> {
     }
 
     @Override
+    protected Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        return rs.getObject(columnIndex);
+    }
+
+    @Override
     protected void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
         ps.setObject(i, parameter);
     }

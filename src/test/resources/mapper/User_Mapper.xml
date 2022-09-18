@@ -35,8 +35,12 @@
 
     <insert id="insertUserInfo" parameterType="user">
         INSERT INTO user
-            (user_id, user_name, user_head, create_time, update_time)
+        (user_id, user_name, user_head, create_time, update_time)
         VALUES (#{userId}, #{userName}, #{userHead}, now(), now())
+
+        <selectKey keyProperty="id" order="AFTER" resultType="long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <delete id="deleteUserInfoByUserId" parameterType="java.lang.String">
