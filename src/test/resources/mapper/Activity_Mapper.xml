@@ -12,7 +12,7 @@
     </resultMap>
 
     <select id="queryActivityById" parameterType="cn.hruit.mybatis.test.po.Activity" resultMap="activityMap">
-        SELECT activity_id, activity_name, activity_desc, create_time, update_time
+        SELECT id,activity_id, activity_name, activity_desc, create_time, update_time
         FROM activity
         <trim prefix="where" prefixOverrides="AND | OR" suffixOverrides="and">
             <if test="null != activityId">
