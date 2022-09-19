@@ -4,7 +4,6 @@ import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
 import cn.hruit.mybatis.type.TypeHandler;
 import cn.hruit.mybatis.type.TypeHandlerRegistry;
-import cn.hruit.mybatis.type.UnknownTypeHandler;
 
 /**
  * @author HONGRRY
@@ -43,7 +42,7 @@ public class BaseBuilder {
 
     protected TypeHandler<?> resolveTypeHandler(Class<?> javaType, Class<? extends TypeHandler<?>> typeHandlerType) {
         if (typeHandlerType == null) {
-            return new UnknownTypeHandler();
+            return null;
         }
         return typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
     }

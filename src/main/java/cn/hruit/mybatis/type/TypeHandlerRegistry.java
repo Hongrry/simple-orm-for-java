@@ -2,6 +2,7 @@ package cn.hruit.mybatis.type;
 
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public final class TypeHandlerRegistry {
         register(String.class, new StringTypeHandler());
         register(String.class, JdbcType.CHAR, new StringTypeHandler());
         register(String.class, JdbcType.VARCHAR, new StringTypeHandler());
+        register(Date.class, new DateTypeHandler());
     }
 
     private <T> void register(Type javaType, TypeHandler<? extends T> typeHandler) {

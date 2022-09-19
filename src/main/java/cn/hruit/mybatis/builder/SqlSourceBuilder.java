@@ -1,9 +1,6 @@
-package cn.hruit.mybatis.builder.xml;
+package cn.hruit.mybatis.builder;
 
 
-import cn.hruit.mybatis.builder.BaseBuilder;
-import cn.hruit.mybatis.builder.ParameterExpression;
-import cn.hruit.mybatis.builder.StaticSqlSource;
 import cn.hruit.mybatis.mapping.ParameterMapping;
 import cn.hruit.mybatis.mapping.SqlSource;
 import cn.hruit.mybatis.parsing.GenericTokenParser;

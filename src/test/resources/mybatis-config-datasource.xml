@@ -20,6 +20,7 @@
     </environments>
     <mappers>
         <mapper resource="mapper/User_Mapper.xml"/>
+        <mapper resource="mapper/Activity_Mapper.xml"/>
         <mapper class="cn.hruit.mybatis.test.dao.IAnnotationUserMapper"/>
       <!--  <package name="cn.hruit.mybatis.test.dao"/>-->
     </mappers>

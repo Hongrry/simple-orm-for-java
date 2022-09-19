@@ -1,10 +1,11 @@
-package cn.hruit.mybatis.test.po;
+package cn.hruit.mybatis.test;
 
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.session.SqlSession;
 import cn.hruit.mybatis.session.SqlSessionFactory;
 import cn.hruit.mybatis.session.SqlSessionFactoryBuilder;
 import cn.hruit.mybatis.test.dao.IAnnotationUserMapper;
+import cn.hruit.mybatis.test.po.User;
 import com.alibaba.fastjson.JSON;
 import org.junit.Before;
 import org.junit.Test;

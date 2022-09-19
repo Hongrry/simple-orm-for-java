@@ -1,6 +1,6 @@
 package cn.hruit.mybatis.scripting.defaults;
 
-import cn.hruit.mybatis.builder.xml.SqlSourceBuilder;
+import cn.hruit.mybatis.builder.SqlSourceBuilder;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.SqlSource;
 import cn.hruit.mybatis.scripting.xmltags.DynamicContext;
