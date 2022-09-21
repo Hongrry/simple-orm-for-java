@@ -15,6 +15,8 @@ import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.mapping.ResultMap;
+import cn.hruit.mybatis.plugin.Interceptor;
+import cn.hruit.mybatis.plugin.InterceptorChain;
 import cn.hruit.mybatis.reflection.DefaultReflectorFactory;
 import cn.hruit.mybatis.reflection.MetaObject;
 import cn.hruit.mybatis.reflection.ReflectorFactory;
@@ -57,6 +59,10 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    /**
+     * 插件拦截链
+     */
+    protected final InterceptorChain interceptorChain = new InterceptorChain();
     /**
      * 类型别名中心
      */
@@ -137,18 +143,25 @@ public class Configuration {
      * 创建结果集处理器
      */
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        return new DefaultResultSetHandler(executor, mappedStatement, resultHandler, rowBounds, boundSql);
+        ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, resultHandler, rowBounds, boundSql);
+        resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
+        return resultSetHandler;
     }
 
     public Executor newExecutor(Transaction tx) {
-        return new SimpleExecutor(tx, this);
+        Executor executor = new SimpleExecutor(tx, this);
+        executor = (Executor) interceptorChain.pluginAll(executor);
+        return executor;
     }
 
     /**
      * 创建语句处理器
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
+        StatementHandler statementHandler = new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
+        // 嵌入插件
+        statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+        return statementHandler;
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -173,6 +186,7 @@ public class Configuration {
 
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+        parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
         return parameterHandler;
     }
 
@@ -227,5 +241,9 @@ public class Configuration {
 
     public boolean hasKeyGenerator(String id) {
         return keyGenerators.containsKey(id);
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptorChain.addInterceptor(interceptor);
     }
 }

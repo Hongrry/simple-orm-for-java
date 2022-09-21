@@ -1,5 +1,6 @@
 package cn.hruit.mybatis.executor.statement;
 
+import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.session.ResultHandler;
 
 import java.sql.Connection;
@@ -44,4 +45,6 @@ public interface StatementHandler {
      * @return 更新结果
      */
     int update(Statement stmt) throws SQLException;
+
+    BoundSql getBoundSql();
 }

@@ -7,6 +7,12 @@
         <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
         <package name="cn.hruit.mybatis.test.po"/>
     </typeAliases>
+    <plugins>
+        <plugin interceptor="cn.hruit.mybatis.test.plugin.TestPlugin">
+            <property name="test00" value="100"/>
+            <property name="test01" value="200"/>
+        </plugin>
+    </plugins>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -22,6 +28,6 @@
         <mapper resource="mapper/User_Mapper.xml"/>
         <mapper resource="mapper/Activity_Mapper.xml"/>
         <mapper class="cn.hruit.mybatis.test.dao.IAnnotationUserMapper"/>
-      <!--  <package name="cn.hruit.mybatis.test.dao"/>-->
+        <!--  <package name="cn.hruit.mybatis.test.dao"/>-->
     </mappers>
 </configuration>

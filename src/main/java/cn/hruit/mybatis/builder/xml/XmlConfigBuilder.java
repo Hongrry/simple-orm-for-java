@@ -4,6 +4,7 @@ import cn.hruit.mybatis.builder.BaseBuilder;
 import cn.hruit.mybatis.datasource.DataSourceFactory;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.mapping.Environment;
+import cn.hruit.mybatis.plugin.Interceptor;
 import cn.hruit.mybatis.reflection.MetaClass;
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.transaction.TransactionFactory;
@@ -52,12 +53,32 @@ public class XmlConfigBuilder extends BaseBuilder {
             Properties settings = settingsAsProperties(root.element("settings"));
             settingsElement(settings);
             typeAliasesElement(root.element("typeAliases"));
+            pluginElement(root.element("plugins"));
             environmentsElement(root.element("environments"));
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
             throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
         }
         return configuration;
+    }
+
+    private void pluginElement(Element plugins) throws Exception {
+        if (plugins != null) {
+            List<Element> elements = plugins.elements("plugin");
+            for (Element element : elements) {
+                String interceptorClass = element.attributeValue("interceptor");
+                List<Element> propList = element.elements("property");
+                Properties props = new Properties();
+                for (Element prop : propList) {
+                    String name = prop.attributeValue("name");
+                    String value = prop.attributeValue("value");
+                    props.put(name, value);
+                }
+                Interceptor instance = (Interceptor) resolveAlias(interceptorClass).getConstructor().newInstance();
+                instance.setProperties(props);
+                configuration.addInterceptor(instance);
+            }
+        }
     }
 
     private void settingsElement(Properties props) {

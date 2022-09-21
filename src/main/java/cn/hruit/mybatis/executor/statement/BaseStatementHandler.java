@@ -68,4 +68,9 @@ public abstract class BaseStatementHandler implements StatementHandler {
      * @throws SQLException 异常信息
      */
     protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
+
+    @Override
+    public BoundSql getBoundSql() {
+        return boundSql;
+    }
 }
