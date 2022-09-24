@@ -67,7 +67,6 @@ public class MapperAnnotationBuilder {
         if (sqlSource != null) {
             String mappedStatementId = method.getName();
             SqlCommandType sqlCommandType = getSqlCommandType(method);
-
             KeyGenerator keyGenerator;
             String keyProperty = "id";
             if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
@@ -89,6 +88,7 @@ public class MapperAnnotationBuilder {
                     parameterTypeClass,
                     resultMapId,
                     getReturnType(method),
+                    !isSelect,
                     keyGenerator,
                     keyProperty,
                     languageDriver

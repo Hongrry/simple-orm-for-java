@@ -17,6 +17,7 @@ public class MappedStatement {
     private String resource;
     private Configuration configuration;
     private String id;
+    private boolean flushCacheRequired;
     private SqlCommandType sqlCommandType;
     private SqlSource sqlSource;
     Class<?> resultType;
@@ -93,6 +94,11 @@ public class MappedStatement {
             mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
             return this;
         }
+
+        public Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.flushCacheRequired = flushCacheRequired;
+            return this;
+        }
     }
 
     private static String[] delimitedStringToArray(String in) {
@@ -131,4 +137,7 @@ public class MappedStatement {
         return resultMaps;
     }
 
+    public boolean isFlushCacheRequired() {
+        return flushCacheRequired;
+    }
 }

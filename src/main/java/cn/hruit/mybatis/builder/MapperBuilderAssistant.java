@@ -56,17 +56,20 @@ public class MapperBuilderAssistant extends BaseBuilder {
             Class<?> parameterType,
             String resultMap,
             Class<?> resultType,
+            boolean flushCache,
             KeyGenerator keyGenerator,
             String keyProperty,
             LanguageDriver lang
     ) {
         // 给id加上namespace前缀：cn.bugstack.mybatis.test.dao.IUserDao.queryUserInfoById
         id = applyCurrentNamespace(id, false);
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlCommandType, sqlSource, resultType)
+                .resource(resource)
+                .keyGenerator(keyGenerator)
+                .keyProperty(keyProperty)
+                .flushCacheRequired(valueOrDefault(flushCache, !isSelect));
 
-        MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlCommandType, sqlSource, resultType);
-        statementBuilder.resource(resource);
-        statementBuilder.keyGenerator(keyGenerator);
-        statementBuilder.keyProperty(keyProperty);
 
         // 结果映射，给 MappedStatement#resultMaps
         setStatementResultMap(resultMap, resultType, statementBuilder);
@@ -76,6 +79,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
         configuration.addMappedStatement(statement);
 
         return statement;
+    }
+
+    private <T> T valueOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
     }
 
     private void setStatementResultMap(

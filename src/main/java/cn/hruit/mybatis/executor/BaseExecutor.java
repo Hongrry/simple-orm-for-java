@@ -30,9 +30,14 @@ public abstract class BaseExecutor implements Executor {
     protected Configuration configuration;
     /**
      * 一级缓存
+     * 会话的生命周期短，数据不会一直被存放
      */
     protected PerpetualCache localCache;
     private boolean closed;
+    /**
+     * 避免递归查询时，缓存被清空
+     */
+    protected int queryStack;
 
     public BaseExecutor(Transaction transaction, Configuration configuration) {
         this.transaction = transaction;
@@ -54,12 +59,22 @@ public abstract class BaseExecutor implements Executor {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        List<E> list = (List<E>) localCache.getObject(key);
-        if (list == null) {
-            list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+
+        if (queryStack == 0 && ms.isFlushCacheRequired()) {
+            clearLocalCache();
+        }
+        List<E> list = null;
+        try {
+            queryStack++;
+            list = (List<E>) localCache.getObject(key);
+            if (list == null) {
+                list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+            }
+        } finally {
+            queryStack--;
         }
         // 如果是 STATEMENT 级别，需要清空缓存
-        if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+        if (queryStack == 0 && configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
             clearLocalCache();
         }
         return list;

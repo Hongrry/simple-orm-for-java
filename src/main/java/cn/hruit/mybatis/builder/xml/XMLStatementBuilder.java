@@ -53,6 +53,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         // 获取命令类型(select|insert|update|delete)
         String nodeName = element.getName();
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        boolean flushCache = booleanValueOf(element.attributeValue("flushCache"), !isSelect);
 
         // 获取默认语言驱动器
         Class<?> langClass = configuration.getLanguageRegistry().getDefaultDriverClass();
@@ -89,6 +91,7 @@ public class XMLStatementBuilder extends BaseBuilder {
                 parameterTypeClass,
                 resultMap,
                 resultTypeClass,
+                flushCache,
                 keyGenerator,
                 keyProperty,
                 langDriver);
@@ -134,6 +137,7 @@ public class XMLStatementBuilder extends BaseBuilder {
                 parameterTypeClass,
                 resultMap,
                 resultTypeClass,
+                false,
                 keyGenerator,
                 keyProperty,
                 langDriver);
