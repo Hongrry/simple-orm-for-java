@@ -7,6 +7,7 @@ import cn.hruit.mybatis.mapping.Environment;
 import cn.hruit.mybatis.plugin.Interceptor;
 import cn.hruit.mybatis.reflection.MetaClass;
 import cn.hruit.mybatis.session.Configuration;
+import cn.hruit.mybatis.session.LocalCacheScope;
 import cn.hruit.mybatis.transaction.TransactionFactory;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
 import org.dom4j.Document;
@@ -83,6 +84,7 @@ public class XmlConfigBuilder extends BaseBuilder {
 
     private void settingsElement(Properties props) {
         configuration.setMapUnderscoreToCamelCase(booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
     }
 
     private void typeAliasesElement(Element typeAliases) {

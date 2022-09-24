@@ -1,6 +1,7 @@
 package cn.hruit.mybatis.executor;
 
 
+import cn.hruit.mybatis.cache.CacheKey;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.session.ResultHandler;
@@ -38,7 +39,7 @@ public interface Executor {
      * @param boundSql      SQL 封装
      * @return 查询结果
      */
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException;
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler,CacheKey key, BoundSql boundSql) throws SQLException;
 
     /**
      * 查询
@@ -94,4 +95,29 @@ public interface Executor {
      * @param executor executor
      */
     void setExecutorWrapper(Executor executor);
+
+    /**
+     * 创建缓存键
+     *
+     * @param ms              映射语句
+     * @param parameterObject 参数
+     * @param rowBounds       行边界
+     * @param boundSql        SQL
+     * @return 键
+     */
+    CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
+
+    /**
+     * 是否存在缓存
+     *
+     * @param ms  映射语句
+     * @param key 键
+     * @return 结果
+     */
+    boolean isCached(MappedStatement ms, CacheKey key);
+
+    /**
+     * 清理一级缓存
+     */
+    void clearLocalCache();
 }

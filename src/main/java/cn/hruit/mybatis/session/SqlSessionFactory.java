@@ -20,4 +20,11 @@ public interface SqlSessionFactory {
      * @return SqlSession
      */
     SqlSession openSession(boolean autoCommit);
+
+    /**
+     * 获取全局配置
+     *
+     * @return 配置
+     */
+    Configuration getConfiguration();
 }

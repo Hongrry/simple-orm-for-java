@@ -1,11 +1,17 @@
 package cn.hruit.mybatis.executor;
 
+import cn.hruit.mybatis.cache.CacheKey;
+import cn.hruit.mybatis.cache.impl.PerpetualCache;
 import cn.hruit.mybatis.mapping.BoundSql;
 import cn.hruit.mybatis.mapping.MappedStatement;
+import cn.hruit.mybatis.mapping.ParameterMapping;
+import cn.hruit.mybatis.reflection.MetaObject;
 import cn.hruit.mybatis.session.Configuration;
+import cn.hruit.mybatis.session.LocalCacheScope;
 import cn.hruit.mybatis.session.ResultHandler;
 import cn.hruit.mybatis.session.RowBounds;
 import cn.hruit.mybatis.transaction.Transaction;
+import cn.hruit.mybatis.type.TypeHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +28,47 @@ public abstract class BaseExecutor implements Executor {
     protected Transaction transaction;
     protected Executor wrapper;
     protected Configuration configuration;
+    /**
+     * 一级缓存
+     */
+    protected PerpetualCache localCache;
     private boolean closed;
 
     public BaseExecutor(Transaction transaction, Configuration configuration) {
         this.transaction = transaction;
         this.configuration = configuration;
+        this.localCache = new PerpetualCache("LocalCache");
         wrapper = this;
     }
 
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
         BoundSql boundSql = ms.getBoundSql(parameter);
-        return query(ms, parameter, rowBounds, resultHandler, boundSql);
+        CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+        return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    @SuppressWarnings("unchecked")
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
+        List<E> list = (List<E>) localCache.getObject(key);
+        if (list == null) {
+            list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+        }
+        // 如果是 STATEMENT 级别，需要清空缓存
+        if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+            clearLocalCache();
+        }
+        return list;
+    }
+
+    private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+        List<E> list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
+        localCache.putObject(key, list);
+        return list;
     }
 
     @Override
@@ -49,6 +76,7 @@ public abstract class BaseExecutor implements Executor {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
+        clearLocalCache();
         return doUpdate(ms, parameter);
     }
 
@@ -66,6 +94,7 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public void rollback(boolean required) throws SQLException {
         if (!closed) {
+            clearLocalCache();
             if (required) {
                 transaction.rollback();
             }
@@ -92,6 +121,7 @@ public abstract class BaseExecutor implements Executor {
             logger.warn("Unexpected exception on closing transaction.  Cause: " + e);
         } finally {
             transaction = null;
+            localCache = null;
             closed = true;
         }
     }
@@ -104,6 +134,54 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public void setExecutorWrapper(Executor executor) {
         this.wrapper = executor;
+    }
+
+    @Override
+    public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
+        if (closed) {
+            throw new RuntimeException("Executor was closed.");
+        }
+        CacheKey cacheKey = new CacheKey();
+        cacheKey.update(ms.getId());
+        cacheKey.update(rowBounds.getOffset());
+        cacheKey.update(rowBounds.getLimit());
+        cacheKey.update(boundSql.getSql());
+        List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+        TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
+        // mimic DefaultParameterHandler logic
+        for (ParameterMapping parameterMapping : parameterMappings) {
+            Object value;
+            String propertyName = parameterMapping.getProperty();
+            if (boundSql.hasAdditionalParameter(propertyName)) {
+                value = boundSql.getAdditionalParameter(propertyName);
+            } else if (parameterObject == null) {
+                value = null;
+            } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                value = parameterObject;
+            } else {
+                MetaObject metaObject = configuration.newMetaObject(parameterObject);
+                value = metaObject.getValue(propertyName);
+            }
+            cacheKey.update(value);
+
+        }
+        if (configuration.getEnvironment() != null) {
+            // issue #176
+            cacheKey.update(configuration.getEnvironment().getId());
+        }
+        return cacheKey;
+    }
+
+    @Override
+    public boolean isCached(MappedStatement ms, CacheKey key) {
+        return localCache.getObject(key) != null;
+    }
+
+    @Override
+    public void clearLocalCache() {
+        if (!closed) {
+            localCache.clear();
+        }
     }
 
     /**
@@ -127,4 +205,5 @@ public abstract class BaseExecutor implements Executor {
      * @return 更新结果
      */
     protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
+
 }

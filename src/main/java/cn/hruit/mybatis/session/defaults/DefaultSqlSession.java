@@ -5,7 +5,6 @@ import cn.hruit.mybatis.mapping.MappedStatement;
 import cn.hruit.mybatis.session.Configuration;
 import cn.hruit.mybatis.session.RowBounds;
 import cn.hruit.mybatis.session.SqlSession;
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +46,9 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <E> List<E> selectList(String statement, Object parameter) {
-        logger.info("执行查询 statement：{} parameter：{}", statement, JSON.toJSONString(parameter));
         MappedStatement ms = configuration.getMappedStatement(statement);
         try {
-            return executor.query(ms, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
+            return executor.query(ms, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
         } catch (SQLException e) {
             throw new RuntimeException("Error querying database.  Cause: " + e);
         }

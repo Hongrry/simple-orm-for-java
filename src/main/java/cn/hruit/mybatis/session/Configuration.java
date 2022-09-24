@@ -47,6 +47,14 @@ public class Configuration {
      * 是否启用驼峰映射
      */
     protected boolean mapUnderscoreToCamelCase;
+    /**
+     * 本地缓存作用域（一级缓存作用域）
+     */
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+    /**
+     * 二级缓存是否启动
+     */
+    protected boolean cacheEnabled = true;
     private Environment environment;
     protected boolean useGeneratedKeys = false;
     private final MapperRegistry registry = new MapperRegistry(this);
@@ -246,4 +254,21 @@ public class Configuration {
     public void addInterceptor(Interceptor interceptor) {
         interceptorChain.addInterceptor(interceptor);
     }
+
+    public void setLocalCacheScope(LocalCacheScope localCacheScope) {
+        this.localCacheScope = localCacheScope;
+    }
+
+    public LocalCacheScope getLocalCacheScope() {
+        return localCacheScope;
+    }
+
+    public boolean isCacheEnabled() {
+        return cacheEnabled;
+    }
+
+    public void setCacheEnabled(boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
+    }
+
 }

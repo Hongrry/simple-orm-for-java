@@ -94,5 +94,4 @@ public class Activity {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
-
 }

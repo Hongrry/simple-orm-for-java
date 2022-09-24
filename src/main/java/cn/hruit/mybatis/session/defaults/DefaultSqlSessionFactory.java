@@ -46,4 +46,9 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
             throw new RuntimeException("Error opening session.  Cause: " + e);
         }
     }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 }
