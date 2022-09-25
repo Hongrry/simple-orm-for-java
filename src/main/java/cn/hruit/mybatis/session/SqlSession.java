@@ -102,4 +102,10 @@ public interface SqlSession {
      * @param force 是否强制提交
      */
     void commit(boolean force);
+
+    /**
+     * 关闭会话
+     */
+    void close();
+
 }

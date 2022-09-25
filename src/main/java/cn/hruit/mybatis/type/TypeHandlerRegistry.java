@@ -33,6 +33,9 @@ public final class TypeHandlerRegistry {
         register(Long.class, new LongTypeHandler());
         register(long.class, new LongTypeHandler());
 
+        register(Integer.class, new IntegerTypeHandler());
+        register(int.class, new IntegerTypeHandler());
+
         register(Object.class, unknownTypeHandler);
         register(Object.class, JdbcType.OTHER, unknownTypeHandler);
 

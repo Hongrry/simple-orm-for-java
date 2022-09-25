@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--配置文件地址-->
+    <settings>
+        <setting name="localCacheScope" value="SESSION"/>
+        <setting name="cacheEnabled" value="true"/>
+        <!--开启驼峰式命名，数据库的列名能够映射到去除下划线驼峰命名后的字段名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
+        <package name="cn.hruit.mybatis.test.po"/>
+    </typeAliases>
+    <plugins>
+        <plugin interceptor="cn.hruit.mybatis.test.plugin.TestPlugin">
+            <property name="test00" value="100"/>
+            <property name="test01" value="200"/>
+        </plugin>
+    </plugins>
+    <environments default="development">
+        <environment id="development">
+            <!--使用默认的JDBC事务管理-->
+            <transactionManager type="JDBC"/>
+            <!--使用连接池-->
+            <dataSource type="POOLED">
+                <property name="url"
+                          value="jdbc:mysql://LocalServer:3306/demo?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"/>
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="username" value="root"/>
+                <property name="password" value="123456"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--SQL映射文件,mybatis的核心-->
+    <mappers>
+        <mapper resource="mapper/classMapper.xml"/>
+        <mapper resource="mapper/studentMapper.xml"/>
+    </mappers>
+
+</configuration>
