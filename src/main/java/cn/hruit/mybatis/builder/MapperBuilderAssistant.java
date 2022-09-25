@@ -24,6 +24,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
     private String currentNamespace;
     private String resource;
     private Cache currentCache;
+    /**
+     * 是否完成缓存引用解析
+     */
+    private boolean unresolvedCacheRef;
 
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
@@ -67,6 +71,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
             String keyProperty,
             LanguageDriver lang
     ) {
+        if (unresolvedCacheRef) {
+            throw new IncompleteElementException("Cache-ref not yet resolved");
+        }
         // 给id加上namespace前缀：cn.bugstack.mybatis.test.dao.IUserDao.queryUserInfoById
         id = applyCurrentNamespace(id, false);
         boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
@@ -189,5 +196,24 @@ public class MapperBuilderAssistant extends BaseBuilder {
         configuration.addCache(cache);
         currentCache = cache;
         return cache;
+    }
+
+    public Cache useCacheRef(String namespace) {
+        if (namespace == null) {
+            throw new RuntimeException("cache-ref element requires a namespace attribute.");
+        }
+        try {
+            unresolvedCacheRef = true;
+            Cache cache = configuration.getCache(namespace);
+            if (cache == null) {
+                throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
+            }
+            currentCache = cache;
+            unresolvedCacheRef = false;
+            return cache;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("No cache for namespace '" + namespace + "' could be found.", e);
+        }
+
     }
 }

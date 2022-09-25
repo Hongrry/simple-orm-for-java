@@ -1,6 +1,8 @@
 package cn.hruit.mybatis.session;
 
 import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.builder.CacheRefResolver;
+import cn.hruit.mybatis.builder.xml.XMLStatementBuilder;
 import cn.hruit.mybatis.cache.Cache;
 import cn.hruit.mybatis.cache.decorators.LruCache;
 import cn.hruit.mybatis.cache.impl.PerpetualCache;
@@ -64,6 +66,11 @@ public class Configuration {
      */
     protected final Map<String, Cache> caches = new HashMap<>();
     /**
+     * 二级缓存引用
+     */
+    protected final Map<String, String> cacheRefMap = new HashMap<String, String>();
+
+    /**
      * ResultMap
      */
     protected final Map<String, ResultMap> resultMaps = new HashMap<>();
@@ -110,6 +117,14 @@ public class Configuration {
      * databaseId 的作用是什么
      */
     protected String databaseId;
+    /**
+     * 未完成处理的缓存引用
+     */
+    protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
+    /**
+     * 未完成处理的构建器
+     */
+    protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
 
     public Configuration() {
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
@@ -300,5 +315,25 @@ public class Configuration {
 
     public boolean hasCache(String id) {
         return caches.containsKey(id);
+    }
+
+    public void addCacheRef(String namespace, String referencedNamespace) {
+        cacheRefMap.put(namespace, referencedNamespace);
+    }
+
+    public Collection<CacheRefResolver> getIncompleteCacheRefs() {
+        return incompleteCacheRefs;
+    }
+
+    public void addIncompleteCacheRef(CacheRefResolver incompleteCacheRef) {
+        incompleteCacheRefs.add(incompleteCacheRef);
+    }
+
+    public void addIncompleteStatement(XMLStatementBuilder incompleteStatement) {
+        incompleteStatements.add(incompleteStatement);
+    }
+
+    public Collection<XMLStatementBuilder> getIncompleteStatements() {
+        return incompleteStatements;
     }
 }

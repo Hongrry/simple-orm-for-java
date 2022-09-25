@@ -1,8 +1,6 @@
 package cn.hruit.mybatis.builder.xml;
 
-import cn.hruit.mybatis.builder.BaseBuilder;
-import cn.hruit.mybatis.builder.MapperBuilderAssistant;
-import cn.hruit.mybatis.builder.ResultMapResolver;
+import cn.hruit.mybatis.builder.*;
 import cn.hruit.mybatis.cache.Cache;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.mapping.ResultFlag;
@@ -15,9 +13,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author HONGRRY
@@ -55,6 +51,9 @@ public class XMLMapperBuilder extends BaseBuilder {
             // 绑定映射器到namespace
             configuration.addMapper(Resources.classForName(currentNamespace));
         }
+        // 处理因为条件不满足未完成的数据
+        parsePendingCacheRefs();
+        parsePendingStatements();
     }
 
     private void configurationElement(Element element) {
@@ -78,9 +77,51 @@ public class XMLMapperBuilder extends BaseBuilder {
         );
     }
 
+    private void parsePendingCacheRefs() {
+        Collection<CacheRefResolver> incompleteCacheRefs = configuration.getIncompleteCacheRefs();
+        synchronized (incompleteCacheRefs) {
+            Iterator<CacheRefResolver> iter = incompleteCacheRefs.iterator();
+            while (iter.hasNext()) {
+                try {
+                    iter.next().resolveCacheRef();
+                    iter.remove();
+                } catch (Exception e) {
+                    // Cache ref is still missing a resource...
+                }
+            }
+        }
+    }
+
+    private void parsePendingStatements() {
+        Collection<XMLStatementBuilder> incompleteStatements = configuration.getIncompleteStatements();
+        synchronized (incompleteStatements) {
+            Iterator<XMLStatementBuilder> iter = incompleteStatements.iterator();
+            while (iter.hasNext()) {
+                try {
+                    iter.next().parseStatementNode();
+                    iter.remove();
+                } catch (IncompleteElementException e) {
+                    // Statement is still missing a resource...
+                }
+            }
+        }
+    }
+
     private void cacheRefElement(Element cacheRef) {
         if (cacheRef != null) {
-            // TODO 缓存引用解析
+            String namespace = cacheRef.attributeValue("namespace");
+
+            if (namespace == null || "".equals(namespace)) {
+                throw new RuntimeException("namespace is empty or null");
+            }
+            configuration.addCacheRef(builderAssistant.getCurrentNamespace(), namespace);
+            CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, namespace);
+            try {
+                cacheRefResolver.resolveCacheRef();
+            } catch (IncompleteElementException e) {
+                // 会在最后进行解析
+                configuration.addIncompleteCacheRef(cacheRefResolver);
+            }
         }
     }
 
@@ -162,7 +203,11 @@ public class XMLMapperBuilder extends BaseBuilder {
         for (List<Element> list : lists) {
             for (Element element : list) {
                 final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, builderAssistant);
-                statementParser.parseStatementNode();
+                try {
+                    statementParser.parseStatementNode();
+                } catch (IncompleteElementException e) {
+                    configuration.addIncompleteStatement(statementParser);
+                }
             }
         }
     }
