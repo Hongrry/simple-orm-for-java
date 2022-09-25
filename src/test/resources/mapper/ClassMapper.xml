@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.hruit.mybatis.test.mapper.ClassMapper">
+<mapper namespace="cn.hruit.orm.test.mapper.ClassMapper">
     <!--    <cache />-->
-    <cache-ref namespace="cn.hruit.mybatis.test.mapper.StudentMapper"/>
-    <update id="updateClassName" parameterType="cn.hruit.mybatis.test.entity.Class">
+    <cache-ref namespace="cn.hruit.orm.test.mapper.StudentMapper"/>
+    <update id="updateClassName" parameterType="cn.hruit.orm.test.entity.Class">
         UPDATE class
         SET name = #{className}
         WHERE id = #{classId}

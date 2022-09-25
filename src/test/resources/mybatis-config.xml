@@ -13,11 +13,11 @@
     </settings>
 
     <typeAliases>
-        <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
-        <package name="cn.hruit.mybatis.test.po"/>
+        <typeAlias type="cn.hruit.orm.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
+        <package name="cn.hruit.orm.test.po"/>
     </typeAliases>
     <plugins>
-        <plugin interceptor="cn.hruit.mybatis.test.plugin.TestPlugin">
+        <plugin interceptor="cn.hruit.orm.test.plugin.TestPlugin">
             <property name="test00" value="100"/>
             <property name="test01" value="200"/>
         </plugin>

@@ -7,11 +7,11 @@
         <setting name="localCacheScope" value="SESSION"/>
     </settings>
     <typeAliases>
-        <typeAlias type="cn.hruit.mybatis.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
-        <package name="cn.hruit.mybatis.test.po"/>
+        <typeAlias type="cn.hruit.orm.datasource.druid.DruidDataSourceFactory" alias="DRUID"/>
+        <package name="cn.hruit.orm.test.po"/>
     </typeAliases>
     <!--    <plugins>
-            <plugin interceptor="cn.hruit.mybatis.test.plugin.TestPlugin">
+            <plugin interceptor="cn.hruit.orm.test.plugin.TestPlugin">
                 <property name="test00" value="100"/>
                 <property name="test01" value="200"/>
             </plugin>
@@ -20,17 +20,18 @@
         <environment id="development">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                <property name="url" value="jdbc:mysql://82.157.64.86:3306/mybatis?useUnicode=true"/>
+                <property name="url"
+                          value="jdbc:mysql://LocalServer:3306/demo?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"/>
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="username" value="root"/>
-                <property name="password" value="3J7aU#PZ#qL&amp;HR"/>
+                <property name="password" value="123456"/>
             </dataSource>
         </environment>
     </environments>
     <mappers>
         <mapper resource="mapper/User_Mapper.xml"/>
         <mapper resource="mapper/Activity_Mapper.xml"/>
-        <mapper class="cn.hruit.mybatis.test.dao.IAnnotationUserMapper"/>
-        <!--  <package name="cn.hruit.mybatis.test.dao"/>-->
+        <mapper class="cn.hruit.orm.test.dao.IAnnotationUserMapper"/>
+        <!--  <package name="cn.hruit.orm.test.dao"/>-->
     </mappers>
 </configuration>
