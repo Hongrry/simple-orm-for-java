@@ -153,4 +153,12 @@ public class MappedStatement {
     public boolean isFlushCacheRequired() {
         return flushCacheRequired;
     }
+
+    public boolean isUseCache() {
+        return useCache;
+    }
+
+    public Cache getCache() {
+        return cache;
+    }
 }

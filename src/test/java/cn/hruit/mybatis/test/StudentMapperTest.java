@@ -32,6 +32,7 @@ public class StudentMapperTest {
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
      * 用例：在同一个会话且缓存作用域为会话的情况下，除了第一次以外，都命中缓存
+     *
      * @throws Exception
      */
     @Test
@@ -48,6 +49,7 @@ public class StudentMapperTest {
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
      * 用例：在同一个会话且缓存作用域为会话的情况下，执行更新操作会使缓存失效
+     *
      * @throws Exception
      */
     @Test
@@ -66,6 +68,7 @@ public class StudentMapperTest {
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
      * 用例：在两个会话都存在缓存的情况下，一个会话更新了数据，另一个缓存没有被更新，会出现脏读
+     *
      * @throws Exception
      */
     @Test
@@ -99,6 +102,7 @@ public class StudentMapperTest {
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
      * 用例: 二级缓存，不提交事务、不会添加缓存
+     *
      * @throws Exception
      */
     @Test
@@ -118,7 +122,7 @@ public class StudentMapperTest {
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
      * 用例: 二级缓存，提交事务，会话共享缓存
-
+     *
      * @throws Exception
      */
     @Test
@@ -138,6 +142,7 @@ public class StudentMapperTest {
     /**
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
+     * 用例: 二级缓存，执行更新指令后，刷新缓存
      *
      * @throws Exception
      */
@@ -169,6 +174,7 @@ public class StudentMapperTest {
     /**
      * <setting name="localCacheScope" value="SESSION"/>
      * <setting name="cacheEnabled" value="true"/>
+     * 用例: 二级缓存，夸命名空间缓存，会出现脏数据
      *
      * @throws Exception
      */

@@ -6,6 +6,7 @@ import cn.hruit.mybatis.cache.decorators.LruCache;
 import cn.hruit.mybatis.cache.impl.PerpetualCache;
 import cn.hruit.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import cn.hruit.mybatis.executor.CachingExecutor;
 import cn.hruit.mybatis.executor.Executor;
 import cn.hruit.mybatis.executor.SimpleExecutor;
 import cn.hruit.mybatis.executor.keygen.KeyGenerator;
@@ -165,6 +166,9 @@ public class Configuration {
 
     public Executor newExecutor(Transaction tx) {
         Executor executor = new SimpleExecutor(tx, this);
+        if (cacheEnabled) {
+            executor = new CachingExecutor(executor);
+        }
         executor = (Executor) interceptorChain.pluginAll(executor);
         return executor;
     }
