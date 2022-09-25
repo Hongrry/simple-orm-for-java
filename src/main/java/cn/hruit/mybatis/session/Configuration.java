@@ -1,6 +1,9 @@
 package cn.hruit.mybatis.session;
 
 import cn.hruit.mybatis.binding.MapperRegistry;
+import cn.hruit.mybatis.cache.Cache;
+import cn.hruit.mybatis.cache.decorators.LruCache;
+import cn.hruit.mybatis.cache.impl.PerpetualCache;
 import cn.hruit.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.hruit.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import cn.hruit.mybatis.executor.Executor;
@@ -32,10 +35,7 @@ import cn.hruit.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import cn.hruit.mybatis.type.TypeAliasRegistry;
 import cn.hruit.mybatis.type.TypeHandlerRegistry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author HONGRRY
@@ -58,6 +58,10 @@ public class Configuration {
     private Environment environment;
     protected boolean useGeneratedKeys = false;
     private final MapperRegistry registry = new MapperRegistry(this);
+    /**
+     * 二级缓存
+     */
+    protected final Map<String, Cache> caches = new HashMap<>();
     /**
      * ResultMap
      */
@@ -110,6 +114,9 @@ public class Configuration {
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
+        typeAliasRegistry.registerAlias("LRU", LruCache.class);
+
 
         // 设置默认XML语言驱动
         languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
@@ -271,4 +278,23 @@ public class Configuration {
         this.cacheEnabled = cacheEnabled;
     }
 
+    public void addCache(Cache cache) {
+        caches.put(cache.getId(), cache);
+    }
+
+    public Collection<String> getCacheNames() {
+        return caches.keySet();
+    }
+
+    public Collection<Cache> getCaches() {
+        return caches.values();
+    }
+
+    public Cache getCache(String id) {
+        return caches.get(id);
+    }
+
+    public boolean hasCache(String id) {
+        return caches.containsKey(id);
+    }
 }

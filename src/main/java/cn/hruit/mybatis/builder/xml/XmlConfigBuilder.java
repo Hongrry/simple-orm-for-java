@@ -85,6 +85,8 @@ public class XmlConfigBuilder extends BaseBuilder {
     private void settingsElement(Properties props) {
         configuration.setMapUnderscoreToCamelCase(booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
         configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
+        configuration.setCacheEnabled((booleanValueOf(props.getProperty("cacheEnabled"), true)));
+
     }
 
     private void typeAliasesElement(Element typeAliases) {

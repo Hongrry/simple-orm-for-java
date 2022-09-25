@@ -55,6 +55,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
         boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
         boolean flushCache = booleanValueOf(element.attributeValue("flushCache"), !isSelect);
+        // 只有Select语句可以使用 useCache 属性,默认值为true 使用缓存
+        boolean useCache = booleanValueOf(element.attributeValue("useCache"), isSelect);
 
         // 获取默认语言驱动器
         Class<?> langClass = configuration.getLanguageRegistry().getDefaultDriverClass();
@@ -92,6 +94,7 @@ public class XMLStatementBuilder extends BaseBuilder {
                 resultMap,
                 resultTypeClass,
                 flushCache,
+                useCache,
                 keyGenerator,
                 keyProperty,
                 langDriver);
@@ -137,6 +140,7 @@ public class XMLStatementBuilder extends BaseBuilder {
                 parameterTypeClass,
                 resultMap,
                 resultTypeClass,
+                false,
                 false,
                 keyGenerator,
                 keyProperty,

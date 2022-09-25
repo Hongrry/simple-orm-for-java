@@ -3,19 +3,21 @@ package cn.hruit.mybatis.builder.xml;
 import cn.hruit.mybatis.builder.BaseBuilder;
 import cn.hruit.mybatis.builder.MapperBuilderAssistant;
 import cn.hruit.mybatis.builder.ResultMapResolver;
+import cn.hruit.mybatis.cache.Cache;
 import cn.hruit.mybatis.io.Resources;
 import cn.hruit.mybatis.mapping.ResultFlag;
+import cn.hruit.mybatis.mapping.ResultMap;
 import cn.hruit.mybatis.mapping.ResultMapping;
 import cn.hruit.mybatis.session.Configuration;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import cn.hruit.mybatis.mapping.ResultMap;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author HONGRRY
@@ -64,12 +66,52 @@ public class XMLMapperBuilder extends BaseBuilder {
         builderAssistant.setCurrentNamespace(currentNamespace);
         // 解析ResultMap
         resultMapElements(element.elements("resultMap"));
+        // 解析缓存引用
+        cacheRefElement(element.element("cache-ref"));
+        // 解析缓存
+        cacheElement(element.element("cache"));
         // 2.配置select|insert|update|delete
         buildStatementFromContext(element.elements("select"),
                 element.elements("insert"),
                 element.elements("update"),
                 element.elements("delete")
         );
+    }
+
+    private void cacheRefElement(Element cacheRef) {
+        if (cacheRef != null) {
+            // TODO 缓存引用解析
+        }
+    }
+
+    private void cacheElement(Element cache) {
+        if (cache != null) {
+            // 底层实现
+            String type = cache.attributeValue("type", "PERPETUAL");
+            Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
+
+            // 淘汰策略
+            String eviction = cache.attributeValue("eviction", "LRU");
+            Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
+
+            // 刷新时间（过期时间？）
+            Long flushInterval = longValueOf(cache.attributeValue("flushInterval"), null);
+
+            // 缓存大小
+            Integer size = integerValueOf(cache.attributeValue("size"), null);
+
+            // 可读写（默认可以读写）
+            boolean readWrite = !booleanValueOf(cache.attributeValue("readOnly"), false);
+
+            // 是否阻塞
+            boolean blocking = booleanValueOf(cache.attributeValue("blocking"), false);
+
+            // 额外配置
+            Properties props = new Properties();
+            //Properties props = cache.elements("properties");
+            builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
+        }
+
     }
 
     private void resultMapElements(List<Element> resultMaps) {

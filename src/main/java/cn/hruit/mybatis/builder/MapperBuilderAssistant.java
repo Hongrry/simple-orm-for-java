@@ -1,5 +1,8 @@
 package cn.hruit.mybatis.builder;
 
+import cn.hruit.mybatis.cache.Cache;
+import cn.hruit.mybatis.cache.decorators.LruCache;
+import cn.hruit.mybatis.cache.impl.PerpetualCache;
 import cn.hruit.mybatis.executor.keygen.KeyGenerator;
 import cn.hruit.mybatis.mapping.*;
 import cn.hruit.mybatis.reflection.MetaClass;
@@ -9,6 +12,7 @@ import cn.hruit.mybatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author HONGRRY
@@ -19,6 +23,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     private String currentNamespace;
     private String resource;
+    private Cache currentCache;
 
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
@@ -57,6 +62,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
             String resultMap,
             Class<?> resultType,
             boolean flushCache,
+            boolean useCache,
             KeyGenerator keyGenerator,
             String keyProperty,
             LanguageDriver lang
@@ -68,8 +74,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
                 .resource(resource)
                 .keyGenerator(keyGenerator)
                 .keyProperty(keyProperty)
-                .flushCacheRequired(valueOrDefault(flushCache, !isSelect));
-
+                .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
+                .useCache(valueOrDefault(useCache, isSelect))
+                .cache(currentCache);
 
         // 结果映射，给 MappedStatement#resultMaps
         setStatementResultMap(resultMap, resultType, statementBuilder);
@@ -161,5 +168,26 @@ public class MapperBuilderAssistant extends BaseBuilder {
         ResultMap resultMap = inlineResultMapBuilder.build();
         configuration.addResultMap(resultMap);
         return resultMap;
+    }
+
+    public Cache useNewCache(Class<? extends Cache> typeClass,
+                             Class<? extends Cache> evictionClass,
+                             Long flushInterval,
+                             Integer size,
+                             boolean readWrite,
+                             boolean blocking,
+                             Properties props) {
+        Cache cache = new CacheBuilder(currentNamespace)
+                .implementation(valueOrDefault(typeClass, PerpetualCache.class))
+                .addDecorator(valueOrDefault(evictionClass, LruCache.class))
+                .clearInterval(flushInterval)
+                .size(size)
+                .readWrite(readWrite)
+                .blocking(blocking)
+                .properties(props)
+                .build();
+        configuration.addCache(cache);
+        currentCache = cache;
+        return cache;
     }
 }

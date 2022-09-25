@@ -24,9 +24,6 @@ public class BaseBuilder {
         this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     }
 
-    protected Boolean booleanValueOf(String value, Boolean defaultValue) {
-        return value == null ? defaultValue : Boolean.valueOf(value);
-    }
 
     public Configuration getConfiguration() {
         return configuration;
@@ -45,5 +42,17 @@ public class BaseBuilder {
             return null;
         }
         return typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
+    }
+
+    protected Boolean booleanValueOf(String value, Boolean defaultValue) {
+        return value == null ? defaultValue : Boolean.valueOf(value);
+    }
+
+    protected Long longValueOf(String value, Long defaultValue) {
+        return value == null ? defaultValue : Long.valueOf(value);
+    }
+
+    protected Integer integerValueOf(String value, Integer defaultValue) {
+        return value == null ? defaultValue : Integer.valueOf(value);
     }
 }

@@ -89,6 +89,7 @@ public class MapperAnnotationBuilder {
                     resultMapId,
                     getReturnType(method),
                     !isSelect,
+                    isSelect,
                     keyGenerator,
                     keyProperty,
                     languageDriver

@@ -1,5 +1,6 @@
 package cn.hruit.mybatis.mapping;
 
+import cn.hruit.mybatis.cache.Cache;
 import cn.hruit.mybatis.executor.keygen.Jdbc3KeyGenerator;
 import cn.hruit.mybatis.executor.keygen.KeyGenerator;
 import cn.hruit.mybatis.executor.keygen.NoKeyGenerator;
@@ -18,8 +19,10 @@ public class MappedStatement {
     private Configuration configuration;
     private String id;
     private boolean flushCacheRequired;
+    private boolean useCache;
     private SqlCommandType sqlCommandType;
     private SqlSource sqlSource;
+    private Cache cache;
     Class<?> resultType;
     private LanguageDriver lang;
     private List<ResultMap> resultMaps;
@@ -97,6 +100,16 @@ public class MappedStatement {
 
         public Builder flushCacheRequired(boolean flushCacheRequired) {
             mappedStatement.flushCacheRequired = flushCacheRequired;
+            return this;
+        }
+
+        public Builder useCache(boolean useCache) {
+            mappedStatement.useCache = useCache;
+            return this;
+        }
+
+        public Builder cache(Cache cache) {
+            mappedStatement.cache = cache;
             return this;
         }
     }

@@ -6,7 +6,7 @@
 
     <!--配置文件地址-->
     <settings>
-        <setting name="localCacheScope" value="SESSION"/>
+        <setting name="localCacheScope" value="STATEMENT"/>
         <setting name="cacheEnabled" value="true"/>
         <!--开启驼峰式命名，数据库的列名能够映射到去除下划线驼峰命名后的字段名-->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
