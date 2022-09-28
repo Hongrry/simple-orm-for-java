@@ -1,40 +1,54 @@
-package cn.hruit.orm.cache.decorators;
+package cn.hruit.orm.test;
 
 import cn.hruit.orm.cache.Cache;
+import cn.hruit.orm.cache.impl.PerpetualCache;
+import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * @author HONGRRY
- * @description Lru (least recently used) cache decorator
- * @date 2022/09/25 16:04
+ * @description
+ * @date 2022/09/28 09:39
  **/
-public class LruCache implements Cache {
+public class EvictionTest {
+    @Test
+    public void testLruCacheEviction() {
+        LruCache cache = new LruCache(2);
+        cache.putObject("1", 1);
+        cache.putObject("2", 2);
+        cache.putObject("3", 3);
+        // 淘汰1
+        System.out.println(cache);
+    }
 
+    @Test
+    public void testLruCacheEvictionWithUse() {
+        LruCache cache = new LruCache(2);
+        cache.putObject("1", 1);
+        cache.putObject("2", 2);
+        cache.getObject("1");
+        cache.putObject("3", 3);
+        // 淘汰2
+        System.out.println(cache);
+    }
+}
+
+class LruCache implements Cache {
     private final Cache delegate;
     private Map<Object, Object> keyMap;
     private Object eldestKey;
 
-    public LruCache(Cache delegate) {
-        this.delegate = delegate;
-        setSize(1024);
+    public LruCache(final int size) {
+        delegate = new PerpetualCache("");
+        setSize(size);
     }
 
-    @Override
-    public String getId() {
-        return delegate.getId();
-    }
-
-    @Override
-    public int getSize() {
-        return delegate.getSize();
-    }
-
-    public void setSize(final int size) {
-        //TODO 原理
-        keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
+    private void setSize(final int size) {
+        keyMap = new LinkedHashMap<Object, Object>(size, .75f, true) {
             private static final long serialVersionUID = 4267176411845948333L;
 
             @Override
@@ -49,6 +63,11 @@ public class LruCache implements Cache {
     }
 
     @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    @Override
     public void putObject(Object key, Object value) {
         delegate.putObject(key, value);
         cycleKeyList(key);
@@ -56,7 +75,6 @@ public class LruCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
-        //touch
         keyMap.get(key);
         return delegate.getObject(key);
     }
@@ -69,8 +87,13 @@ public class LruCache implements Cache {
 
     @Override
     public void clear() {
-        delegate.clear();
         keyMap.clear();
+        delegate.clear();
+    }
+
+    @Override
+    public int getSize() {
+        return delegate.getSize();
     }
 
     @Override
@@ -86,4 +109,9 @@ public class LruCache implements Cache {
         }
     }
 
+    @Override
+    public String toString() {
+        Set<Object> set = keyMap.keySet();
+        return String.valueOf(set);
+    }
 }
